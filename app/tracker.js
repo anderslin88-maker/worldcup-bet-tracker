@@ -1,4 +1,4 @@
- "use client";
+"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
@@ -10,6 +10,83 @@ const supabase =
   supabaseUrl && supabaseAnonKey
     ? createClient(supabaseUrl, supabaseAnonKey)
     : null;
+
+const worldCupMatches = [
+  "🇲🇽 墨西哥 vs 🇿🇦 南非",
+  "🇰🇷 南韓 vs 🇨🇿 捷克",
+  "🇨🇦 加拿大 vs 🇧🇦 波士尼亞",
+  "🇺🇸 美國 vs 🇵🇾 巴拉圭",
+  "🇶🇦 卡達 vs 🇨🇭 瑞士",
+  "🇧🇷 巴西 vs 🇲🇦 摩洛哥",
+  "🇭🇹 海地 vs 🏴 蘇格蘭",
+  "🇦🇺 澳洲 vs 🇹🇷 土耳其",
+  "🇩🇪 德國 vs 🇨🇼 庫拉索",
+  "🇳🇱 荷蘭 vs 🇯🇵 日本",
+  "🇨🇮 象牙海岸 vs 🇪🇨 厄瓜多",
+  "🇸🇪 瑞典 vs 🇹🇳 突尼西亞",
+  "🇪🇸 西班牙 vs 🇨🇻 維德角",
+  "🇧🇪 比利時 vs 🇪🇬 埃及",
+  "🇸🇦 沙烏地阿拉伯 vs 🇺🇾 烏拉圭",
+  "🇮🇷 伊朗 vs 🇳🇿 紐西蘭",
+  "🇫🇷 法國 vs 🇸🇳 塞內加爾",
+  "🇮🇶 伊拉克 vs 🇳🇴 挪威",
+  "🇦🇷 阿根廷 vs 🇩🇿 阿爾及利亞",
+  "🇦🇹 奧地利 vs 🇯🇴 約旦",
+  "🇵🇹 葡萄牙 vs 🇨🇩 剛果民主共和國",
+  "🏴 英格蘭 vs 🇭🇷 克羅埃西亞",
+  "🇬🇭 迦納 vs 🇵🇦 巴拿馬",
+  "🇺🇿 烏茲別克 vs 🇨🇴 哥倫比亞",
+
+  "🇨🇿 捷克 vs 🇿🇦 南非",
+  "🇨🇭 瑞士 vs 🇧🇦 波士尼亞",
+  "🇨🇦 加拿大 vs 🇶🇦 卡達",
+  "🇲🇽 墨西哥 vs 🇰🇷 南韓",
+  "🇺🇸 美國 vs 🇦🇺 澳洲",
+  "🏴 蘇格蘭 vs 🇲🇦 摩洛哥",
+  "🇧🇷 巴西 vs 🇭🇹 海地",
+  "🇹🇷 土耳其 vs 🇵🇾 巴拉圭",
+  "🇳🇱 荷蘭 vs 🇸🇪 瑞典",
+  "🇩🇪 德國 vs 🇨🇮 象牙海岸",
+  "🇪🇨 厄瓜多 vs 🇨🇼 庫拉索",
+  "🇹🇳 突尼西亞 vs 🇯🇵 日本",
+  "🇪🇸 西班牙 vs 🇸🇦 沙烏地阿拉伯",
+  "🇧🇪 比利時 vs 🇮🇷 伊朗",
+  "🇺🇾 烏拉圭 vs 🇨🇻 維德角",
+  "🇳🇿 紐西蘭 vs 🇪🇬 埃及",
+  "🇦🇷 阿根廷 vs 🇦🇹 奧地利",
+  "🇫🇷 法國 vs 🇮🇶 伊拉克",
+  "🇳🇴 挪威 vs 🇸🇳 塞內加爾",
+  "🇯🇴 約旦 vs 🇩🇿 阿爾及利亞",
+  "🇵🇹 葡萄牙 vs 🇺🇿 烏茲別克",
+  "🏴 英格蘭 vs 🇬🇭 迦納",
+  "🇵🇦 巴拿馬 vs 🇭🇷 克羅埃西亞",
+  "🇨🇴 哥倫比亞 vs 🇨🇩 剛果民主共和國",
+
+  "🇨🇭 瑞士 vs 🇨🇦 加拿大",
+  "🇧🇦 波士尼亞 vs 🇶🇦 卡達",
+  "🏴 蘇格蘭 vs 🇧🇷 巴西",
+  "🇲🇦 摩洛哥 vs 🇭🇹 海地",
+  "🇨🇿 捷克 vs 🇲🇽 墨西哥",
+  "🇿🇦 南非 vs 🇰🇷 南韓",
+  "🇪🇨 厄瓜多 vs 🇩🇪 德國",
+  "🇨🇼 庫拉索 vs 🇨🇮 象牙海岸",
+  "🇹🇳 突尼西亞 vs 🇳🇱 荷蘭",
+  "🇯🇵 日本 vs 🇸🇪 瑞典",
+  "🇹🇷 土耳其 vs 🇺🇸 美國",
+  "🇵🇾 巴拉圭 vs 🇦🇺 澳洲",
+  "🇳🇴 挪威 vs 🇫🇷 法國",
+  "🇸🇳 塞內加爾 vs 🇮🇶 伊拉克",
+  "🇺🇾 烏拉圭 vs 🇪🇸 西班牙",
+  "🇨🇻 維德角 vs 🇸🇦 沙烏地阿拉伯",
+  "🇳🇿 紐西蘭 vs 🇧🇪 比利時",
+  "🇪🇬 埃及 vs 🇮🇷 伊朗",
+  "🇵🇦 巴拿馬 vs 🏴 英格蘭",
+  "🇭🇷 克羅埃西亞 vs 🇬🇭 迦納",
+  "🇨🇴 哥倫比亞 vs 🇵🇹 葡萄牙",
+  "🇨🇩 剛果民主共和國 vs 🇺🇿 烏茲別克",
+  "🇯🇴 約旦 vs 🇦🇷 阿根廷",
+  "🇩🇿 阿爾及利亞 vs 🇦🇹 奧地利",
+];
 
 const initialForm = {
   bet_date: new Date().toISOString().slice(0, 10),
@@ -46,8 +123,19 @@ function calcPL(bet) {
 export default function Tracker() {
   const [bets, setBets] = useState([]);
   const [form, setForm] = useState(initialForm);
+  const [matchSearch, setMatchSearch] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const filteredMatches = useMemo(() => {
+    const keyword = matchSearch.trim();
+    if (!keyword) return [];
+
+    return worldCupMatches
+      .filter((match) => match.includes(keyword))
+      .slice(0, 10);
+  }, [matchSearch]);
 
   async function loadBets() {
     if (!supabase) {
@@ -92,6 +180,11 @@ export default function Tracker() {
     e.preventDefault();
     if (!supabase) return;
 
+    if (!form.match_name) {
+      setError("請先從建議選項中選擇比賽。");
+      return;
+    }
+
     setLoading(true);
     setError("");
 
@@ -107,6 +200,8 @@ export default function Tracker() {
       setError(error.message);
     } else {
       setForm(initialForm);
+      setMatchSearch("");
+      setShowSuggestions(false);
       await loadBets();
     }
 
@@ -210,15 +305,80 @@ export default function Tracker() {
                 required
               />
             </div>
-            <div>
-              <label>比賽</label>
+
+            <div style={{ position: "relative" }}>
+              <label>比賽搜尋</label>
               <input
-                value={form.match_name}
-                onChange={(e) => setForm({ ...form, match_name: e.target.value })}
-                placeholder="例：西班牙 vs 烏拉圭"
+                value={matchSearch}
+                onFocus={() => setShowSuggestions(true)}
+                onChange={(e) => {
+                  setMatchSearch(e.target.value);
+                  setForm({ ...form, match_name: "" });
+                  setShowSuggestions(true);
+                }}
+                placeholder="輸入隊名，例如：巴西、阿根廷、西班牙"
                 required
               />
+
+              {showSuggestions && filteredMatches.length > 0 && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "70px",
+                    left: 0,
+                    right: 0,
+                    background: "white",
+                    border: "1px solid #d1d5db",
+                    borderRadius: "10px",
+                    boxShadow: "0 8px 24px rgba(0,0,0,.12)",
+                    zIndex: 20,
+                    maxHeight: "260px",
+                    overflowY: "auto",
+                  }}
+                >
+                  {filteredMatches.map((match) => (
+                    <div
+                      key={match}
+                      onMouseDown={() => {
+                        setForm({ ...form, match_name: match });
+                        setMatchSearch(match);
+                        setShowSuggestions(false);
+                      }}
+                      style={{
+                        padding: "11px",
+                        cursor: "pointer",
+                        borderBottom: "1px solid #f3f4f6",
+                        fontSize: "14px",
+                      }}
+                    >
+                      {match}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {matchSearch && showSuggestions && filteredMatches.length === 0 && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "70px",
+                    left: 0,
+                    right: 0,
+                    background: "white",
+                    border: "1px solid #d1d5db",
+                    borderRadius: "10px",
+                    boxShadow: "0 8px 24px rgba(0,0,0,.12)",
+                    zIndex: 20,
+                    padding: "11px",
+                    color: "#6b7280",
+                    fontSize: "14px",
+                  }}
+                >
+                  找不到符合的比賽
+                </div>
+              )}
             </div>
+
             <div>
               <label>玩法</label>
               <select
@@ -233,6 +393,7 @@ export default function Tracker() {
                 <option>走地</option>
               </select>
             </div>
+
             <div>
               <label>投注內容</label>
               <input
@@ -242,6 +403,7 @@ export default function Tracker() {
                 required
               />
             </div>
+
             <div>
               <label>賠率</label>
               <input
@@ -253,6 +415,7 @@ export default function Tracker() {
                 required
               />
             </div>
+
             <div>
               <label>注碼</label>
               <input
@@ -264,6 +427,7 @@ export default function Tracker() {
                 required
               />
             </div>
+
             <div>
               <label>結果</label>
               <select
@@ -276,6 +440,7 @@ export default function Tracker() {
                 <option value="push">走水</option>
               </select>
             </div>
+
             <div>
               <label>備註</label>
               <input
@@ -284,11 +449,14 @@ export default function Tracker() {
                 placeholder="可不填"
               />
             </div>
+
             <button disabled={loading} type="submit">
               {loading ? "處理中..." : "新增"}
             </button>
           </form>
+
           <p className="note">
+            V3 更新：比賽欄位已改成關鍵字搜尋建議。輸入「巴西、阿根廷、西班牙」等隊名即可快速選擇比賽。
             損益公式：贏 = 注碼 × 賠率 - 注碼；輸 = -注碼；走水 = 0。未結算不計入總損益。
           </p>
           {error && <p className="error">{error}</p>}
