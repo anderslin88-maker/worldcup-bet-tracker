@@ -1,0 +1,159 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f5f6f8;
+  color: #111827;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", Arial, sans-serif;
+}
+
+header {
+  background: #111827;
+  color: white;
+  padding: 22px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 26px;
+}
+
+main {
+  max-width: 1220px;
+  margin: 24px auto;
+  padding: 0 16px;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.card,
+.panel {
+  background: white;
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+
+.panel {
+  margin-bottom: 20px;
+}
+
+.label {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.value {
+  font-size: 28px;
+  font-weight: 750;
+  margin-top: 6px;
+}
+
+.profit {
+  color: #0f9f6e;
+}
+
+.loss {
+  color: #dc2626;
+}
+
+h2 {
+  margin-top: 0;
+  font-size: 20px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+  gap: 12px;
+  align-items: end;
+}
+
+label {
+  font-size: 13px;
+  color: #4b5563;
+  display: block;
+  margin-bottom: 5px;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 11px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 14px;
+  background: white;
+}
+
+button {
+  padding: 11px 14px;
+  border: 0;
+  border-radius: 10px;
+  background: #111827;
+  color: white;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+button.secondary {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+button.danger {
+  background: #dc2626;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 1000px;
+}
+
+th,
+td {
+  border-bottom: 1px solid #e5e7eb;
+  padding: 11px;
+  text-align: left;
+  font-size: 14px;
+}
+
+th {
+  background: #f9fafb;
+  color: #374151;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.note {
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.error {
+  color: #dc2626;
+  font-size: 14px;
+  margin-top: 10px;
+}
