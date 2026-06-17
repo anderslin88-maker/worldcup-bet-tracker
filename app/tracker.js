@@ -36,7 +36,6 @@ const worldCupMatches = [
   "🏴 英格蘭 vs 🇭🇷 克羅埃西亞",
   "🇬🇭 迦納 vs 🇵🇦 巴拿馬",
   "🇺🇿 烏茲別克 vs 🇨🇴 哥倫比亞",
-
   "🇨🇿 捷克 vs 🇿🇦 南非",
   "🇨🇭 瑞士 vs 🇧🇦 波士尼亞",
   "🇨🇦 加拿大 vs 🇶🇦 卡達",
@@ -61,7 +60,6 @@ const worldCupMatches = [
   "🏴 英格蘭 vs 🇬🇭 迦納",
   "🇵🇦 巴拿馬 vs 🇭🇷 克羅埃西亞",
   "🇨🇴 哥倫比亞 vs 🇨🇩 剛果民主共和國",
-
   "🇨🇭 瑞士 vs 🇨🇦 加拿大",
   "🇧🇦 波士尼亞 vs 🇶🇦 卡達",
   "🏴 蘇格蘭 vs 🇧🇷 巴西",
@@ -91,6 +89,7 @@ const worldCupMatches = [
 const initialForm = {
   bet_date: new Date().toISOString().slice(0, 10),
   match_name: "",
+  actual_score: "",
   bet_type: "獨贏",
   selection: "",
   odds: "",
@@ -126,15 +125,14 @@ export default function Tracker() {
   const [matchSearch, setMatchSearch] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [scoreLoading, setScoreLoading] = useState(false);
   const [error, setError] = useState("");
+  const [scoreMessage, setScoreMessage] = useState("");
 
   const filteredMatches = useMemo(() => {
     const keyword = matchSearch.trim();
     if (!keyword) return [];
-
-    return worldCupMatches
-      .filter((match) => match.includes(keyword))
-      .slice(0, 10);
+    return worldCupMatches.filter((match) => match.includes(keyword)).slice(0, 10);
   }, [matchSearch]);
 
   async function loadBets() {
@@ -152,11 +150,8 @@ export default function Tracker() {
       .order("bet_date", { ascending: false })
       .order("created_at", { ascending: false });
 
-    if (error) {
-      setError(error.message);
-    } else {
-      setBets(data || []);
-    }
+    if (error) setError(error.message);
+    else setBets(data || []);
 
     setLoading(false);
   }
@@ -172,7 +167,6 @@ export default function Tracker() {
     const wins = settled.filter((b) => b.result === "win").length;
     const winRate = settled.length ? (wins / settled.length) * 100 : 0;
     const roi = totalStake ? (totalPL / totalStake) * 100 : 0;
-
     return { totalStake, totalPL, winRate, roi };
   }, [bets]);
 
@@ -216,11 +210,49 @@ export default function Tracker() {
       .update({ result })
       .eq("id", id);
 
-    if (error) {
-      setError(error.message);
-    } else {
+    if (error) setError(error.message);
+    else await loadBets();
+  }
+
+  async function fetchAndSyncScores() {
+    if (!supabase) return;
+
+    setScoreLoading(true);
+    setError("");
+    setScoreMessage("抓取賽果中...");
+
+    try {
+      const res = await fetch("/api/scores");
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "抓取賽果失敗");
+      }
+
+      const scores = data.scores || {};
+      let updatedCount = 0;
+
+      for (const bet of bets) {
+        const score = scores[bet.match_name];
+        if (score && score !== bet.actual_score) {
+          const { error } = await supabase
+            .from("bets")
+            .update({ actual_score: score })
+            .eq("id", bet.id);
+
+          if (error) throw error;
+          updatedCount++;
+        }
+      }
+
       await loadBets();
+      setScoreMessage(`賽果更新完成，共更新 ${updatedCount} 筆。`);
+    } catch (err) {
+      setError(err.message);
+      setScoreMessage("");
     }
+
+    setScoreLoading(false);
   }
 
   async function deleteBet(id) {
@@ -229,18 +261,16 @@ export default function Tracker() {
 
     const { error } = await supabase.from("bets").delete().eq("id", id);
 
-    if (error) {
-      setError(error.message);
-    } else {
-      await loadBets();
-    }
+    if (error) setError(error.message);
+    else await loadBets();
   }
 
   function exportCSV() {
-    const header = ["日期", "比賽", "玩法", "投注內容", "賠率", "注碼", "結果", "損益", "備註"];
+    const header = ["日期", "比賽", "實際比分", "玩法", "投注內容", "賠率", "注碼", "結果", "損益", "備註"];
     const rows = bets.map((b) => [
       b.bet_date,
       b.match_name,
+      b.actual_score || "",
       b.bet_type,
       b.selection,
       b.odds,
@@ -266,7 +296,7 @@ export default function Tracker() {
   return (
     <>
       <header>
-        <h1>世界盃投注紀錄 Dashboard</h1>
+        <h1>神奇的慶2026世界盃戰績</h1>
       </header>
 
       <main>
@@ -356,27 +386,11 @@ export default function Tracker() {
                   ))}
                 </div>
               )}
+            </div>
 
-              {matchSearch && showSuggestions && filteredMatches.length === 0 && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "70px",
-                    left: 0,
-                    right: 0,
-                    background: "white",
-                    border: "1px solid #d1d5db",
-                    borderRadius: "10px",
-                    boxShadow: "0 8px 24px rgba(0,0,0,.12)",
-                    zIndex: 20,
-                    padding: "11px",
-                    color: "#6b7280",
-                    fontSize: "14px",
-                  }}
-                >
-                  找不到符合的比賽
-                </div>
-              )}
+            <div>
+              <label>實際比分</label>
+              <input value="比賽結束後按抓取賽果更新" disabled />
             </div>
 
             <div>
@@ -456,9 +470,9 @@ export default function Tracker() {
           </form>
 
           <p className="note">
-            V3 更新：比賽欄位已改成關鍵字搜尋建議。輸入「巴西、阿根廷、西班牙」等隊名即可快速選擇比賽。
-            損益公式：贏 = 注碼 × 賠率 - 注碼；輸 = -注碼；走水 = 0。未結算不計入總損益。
+            V5 更新：只自動抓取實際比分，不自動判斷輸贏；結果仍由你手動選擇。
           </p>
+          {scoreMessage && <p className="note">{scoreMessage}</p>}
           {error && <p className="error">{error}</p>}
         </section>
 
@@ -466,6 +480,9 @@ export default function Tracker() {
           <div className="actions">
             <button className="secondary" onClick={loadBets} disabled={loading}>
               重新整理
+            </button>
+            <button className="secondary" onClick={fetchAndSyncScores} disabled={scoreLoading}>
+              {scoreLoading ? "抓取中..." : "抓取賽果"}
             </button>
             <button className="secondary" onClick={exportCSV}>
               匯出 CSV
@@ -481,6 +498,7 @@ export default function Tracker() {
                 <tr>
                   <th>日期</th>
                   <th>比賽</th>
+                  <th>實際比分</th>
                   <th>玩法</th>
                   <th>投注內容</th>
                   <th>賠率</th>
@@ -498,6 +516,7 @@ export default function Tracker() {
                     <tr key={bet.id}>
                       <td>{bet.bet_date}</td>
                       <td>{bet.match_name}</td>
+                      <td>{bet.actual_score || "未更新"}</td>
                       <td>{bet.bet_type}</td>
                       <td>{bet.selection}</td>
                       <td>{Number(bet.odds).toFixed(2)}</td>
@@ -513,7 +532,9 @@ export default function Tracker() {
                           <option value="push">走水</option>
                         </select>
                       </td>
-                      <td className={pl >= 0 ? "profit" : "loss"}>{pl.toLocaleString()}</td>
+                      <td className={pl >= 0 ? "profit" : "loss"}>
+                        {pl.toLocaleString()}
+                      </td>
                       <td>{bet.note}</td>
                       <td>
                         <button className="danger" onClick={() => deleteBet(bet.id)}>
@@ -525,7 +546,7 @@ export default function Tracker() {
                 })}
                 {bets.length === 0 && (
                   <tr>
-                    <td colSpan="10" className="note">
+                    <td colSpan="11" className="note">
                       尚無投注紀錄
                     </td>
                   </tr>
