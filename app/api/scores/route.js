@@ -166,7 +166,13 @@ export async function GET() {
     }
     console.log("scores =", scores);
     
-    return Response.json({ scores });
+   return Response.json({
+  leagueId,
+  season,
+  fixtureCount: fixtures.length,
+  scores,
+  sample: fixtures.slice(0, 3)
+});
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
