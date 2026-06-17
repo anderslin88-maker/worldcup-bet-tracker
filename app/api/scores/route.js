@@ -164,7 +164,8 @@ export async function GET() {
           : `${awayGoals}-${homeGoals}`;
       }
     }
-
+    console.log("scores =", scores);
+    
     return Response.json({ scores });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
