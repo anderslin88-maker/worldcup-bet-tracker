@@ -213,6 +213,28 @@ export default function Tracker() {
     if (error) setError(error.message);
     else await loadBets();
   }
+function normalizeMatchName(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/ｖｓ/g, "vs")
+    .replace(/對/g, "vs")
+    .replace(/\s+/g, "")
+    .trim();
+}
+
+function getScoreByMatchName(scores, matchName) {
+  if (scores[matchName]) return scores[matchName];
+
+  const target = normalizeMatchName(matchName);
+
+  for (const [key, value] of Object.entries(scores)) {
+    if (normalizeMatchName(key) === target) {
+      return value;
+    }
+  }
+
+  return "";
+}
 
   async function fetchAndSyncScores() {
     if (!supabase) return;
@@ -233,7 +255,7 @@ export default function Tracker() {
       let updatedCount = 0;
 
       for (const bet of bets) {
-        const score = scores[bet.match_name];
+        const score = getScoreByMatchName(scores, bet.match_name);
         if (score && score !== bet.actual_score) {
           const { error } = await supabase
             .from("bets")
