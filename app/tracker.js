@@ -36,6 +36,7 @@ const worldCupMatches = [
   "英格蘭 VS 克羅埃西亞",
   "迦納 VS 巴拿馬",
   "烏茲別克 VS 哥倫比亞",
+
   "捷克 VS 南非",
   "瑞士 VS 波士尼亞",
   "加拿大 VS 卡達",
@@ -60,6 +61,7 @@ const worldCupMatches = [
   "英格蘭 VS 迦納",
   "巴拿馬 VS 克羅埃西亞",
   "哥倫比亞 VS 剛果民主共和國",
+
   "瑞士 VS 加拿大",
   "波士尼亞 VS 卡達",
   "蘇格蘭 VS 巴西",
@@ -119,6 +121,25 @@ function calcPL(bet) {
   return 0;
 }
 
+function formatDateShort(dateString) {
+  if (!dateString) return "";
+  const parts = String(dateString).split("-");
+  if (parts.length >= 3) {
+    return `${Number(parts[1])}/${Number(parts[2])}`;
+  }
+  return dateString;
+}
+
+function splitMatch(matchName) {
+  if (!matchName) return ["", ""];
+  const normalized = String(matchName)
+    .replace(/\s+vs\s+/i, " VS ")
+    .replace(/\s+VS\s+/g, " VS ");
+  const parts = normalized.split(" VS ");
+  if (parts.length >= 2) return [parts[0].trim(), parts.slice(1).join(" VS ").trim()];
+  return [matchName, ""];
+}
+
 export default function Tracker() {
   const [bets, setBets] = useState([]);
   const [form, setForm] = useState(initialForm);
@@ -130,7 +151,10 @@ export default function Tracker() {
   const filteredMatches = useMemo(() => {
     const keyword = matchSearch.trim();
     if (!keyword) return [];
-    return worldCupMatches.filter((match) => match.includes(keyword)).slice(0, 10);
+
+    return worldCupMatches
+      .filter((match) => match.includes(keyword))
+      .slice(0, 10);
   }, [matchSearch]);
 
   async function loadBets() {
@@ -148,8 +172,11 @@ export default function Tracker() {
       .order("bet_date", { ascending: false })
       .order("created_at", { ascending: false });
 
-    if (error) setError(error.message);
-    else setBets(data || []);
+    if (error) {
+      setError(error.message);
+    } else {
+      setBets(data || []);
+    }
 
     setLoading(false);
   }
@@ -209,8 +236,11 @@ export default function Tracker() {
       .update({ result })
       .eq("id", id);
 
-    if (error) setError(error.message);
-    else await loadBets();
+    if (error) {
+      setError(error.message);
+    } else {
+      await loadBets();
+    }
   }
 
   async function updateScore(id, actual_score) {
@@ -221,8 +251,11 @@ export default function Tracker() {
       .update({ actual_score })
       .eq("id", id);
 
-    if (error) setError(error.message);
-    else await loadBets();
+    if (error) {
+      setError(error.message);
+    } else {
+      await loadBets();
+    }
   }
 
   async function updateNote(id, note) {
@@ -233,8 +266,11 @@ export default function Tracker() {
       .update({ note })
       .eq("id", id);
 
-    if (error) setError(error.message);
-    else await loadBets();
+    if (error) {
+      setError(error.message);
+    } else {
+      await loadBets();
+    }
   }
 
   async function deleteBet(id) {
@@ -243,8 +279,11 @@ export default function Tracker() {
 
     const { error } = await supabase.from("bets").delete().eq("id", id);
 
-    if (error) setError(error.message);
-    else await loadBets();
+    if (error) {
+      setError(error.message);
+    } else {
+      await loadBets();
+    }
   }
 
   function exportCSV() {
@@ -368,6 +407,27 @@ export default function Tracker() {
                   ))}
                 </div>
               )}
+
+              {matchSearch && showSuggestions && filteredMatches.length === 0 && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "70px",
+                    left: 0,
+                    right: 0,
+                    background: "white",
+                    border: "1px solid #d1d5db",
+                    borderRadius: "10px",
+                    boxShadow: "0 8px 24px rgba(0,0,0,.12)",
+                    zIndex: 20,
+                    padding: "11px",
+                    color: "#6b7280",
+                    fontSize: "14px",
+                  }}
+                >
+                  找不到符合的比賽
+                </div>
+              )}
             </div>
 
             <div>
@@ -375,7 +435,8 @@ export default function Tracker() {
               <input
                 value={form.actual_score}
                 onChange={(e) => setForm({ ...form, actual_score: e.target.value })}
-                placeholder="例：2-1，可先不填"
+                placeholder="例：2-1"
+                maxLength={6}
               />
             </div>
 
@@ -446,7 +507,6 @@ export default function Tracker() {
               <input
                 value={form.note}
                 onChange={(e) => setForm({ ...form, note: e.target.value })}
-                placeholder="可不填"
               />
             </div>
 
@@ -456,7 +516,7 @@ export default function Tracker() {
           </form>
 
           <p className="note">
-            V6 更新：實際比分改為手動填寫，結果仍由你手動選擇。備註欄也可直接修改或清空。
+            V6.1 更新：日期精簡顯示、比分欄縮小、備註預設空白、比賽主客隊上下排列。
           </p>
           {error && <p className="error">{error}</p>}
         </section>
@@ -475,40 +535,44 @@ export default function Tracker() {
         <section className="panel">
           <h2>投注紀錄</h2>
           <div className="table-wrap">
-            <table>
+            <table className="bet-table">
               <thead>
                 <tr>
-                  <th>日期</th>
-                  <th>比賽</th>
-                  <th>實際比分</th>
+                  <th className="date-col">日期</th>
+                  <th className="match-col">比賽</th>
+                  <th className="score-col">實際比分</th>
                   <th>玩法</th>
                   <th>投注內容</th>
-                  <th>賠率</th>
+                  <th className="odds-col">賠率</th>
                   <th>注碼</th>
                   <th>結果</th>
                   <th>損益</th>
-                  <th>備註</th>
+                  <th className="note-col">備註</th>
                   <th>操作</th>
                 </tr>
               </thead>
               <tbody>
                 {bets.map((bet) => {
                   const pl = calcPL(bet);
+                  const [homeTeam, awayTeam] = splitMatch(bet.match_name);
                   return (
                     <tr key={bet.id}>
-                      <td>{bet.bet_date}</td>
-                      <td>{bet.match_name}</td>
-                      <td>
+                      <td className="date-cell">{formatDateShort(bet.bet_date)}</td>
+                      <td className="match-cell">
+                        <div className="team-line">{homeTeam}</div>
+                        {awayTeam && <div className="team-line away-team">VS {awayTeam}</div>}
+                      </td>
+                      <td className="score-cell">
                         <input
-                          className="table-input"
+                          className="table-input score-input"
                           defaultValue={bet.actual_score || ""}
-                          placeholder="例：2-1"
+                          maxLength={6}
                           onBlur={(e) => updateScore(bet.id, e.target.value)}
                         />
                       </td>
                       <td>{bet.bet_type}</td>
                       <td>{bet.selection}</td>
-                      <td>{Number(bet.odds).toFixed(2)}</td>
+                      <td className="odds-cell">{Number(bet.odds).toFixed(2)}</td>
                       <td>{Number(bet.stake).toLocaleString()}</td>
                       <td>
                         <select
@@ -526,9 +590,8 @@ export default function Tracker() {
                       </td>
                       <td>
                         <input
-                          className="table-input"
+                          className="table-input note-input"
                           defaultValue={bet.note || ""}
-                          placeholder="可不填"
                           onBlur={(e) => updateNote(bet.id, e.target.value)}
                         />
                       </td>
@@ -550,6 +613,90 @@ export default function Tracker() {
               </tbody>
             </table>
           </div>
+
+          <style jsx>{`
+            .bet-table {
+              table-layout: fixed;
+              width: 100%;
+            }
+
+            .date-col {
+              width: 72px;
+            }
+
+            .match-col {
+              width: 160px;
+            }
+
+            .score-col {
+              width: 95px;
+            }
+
+            .odds-col {
+              width: 70px;
+              white-space: nowrap;
+            }
+
+            .note-col {
+              width: 150px;
+            }
+
+            .date-cell {
+              white-space: nowrap;
+              font-weight: 600;
+            }
+
+            .match-cell {
+              line-height: 1.45;
+              white-space: normal;
+            }
+
+            .team-line {
+              display: block;
+              font-weight: 600;
+            }
+
+            .away-team {
+              color: #4b5563;
+              font-weight: 500;
+            }
+
+            .score-cell {
+              width: 95px;
+            }
+
+            .score-input {
+              width: 76px;
+              min-width: 76px;
+              max-width: 76px;
+              text-align: center;
+              padding-left: 6px;
+              padding-right: 6px;
+            }
+
+            .note-input {
+              width: 130px;
+              min-width: 130px;
+              max-width: 130px;
+            }
+
+            .odds-cell {
+              white-space: nowrap;
+              text-align: center;
+            }
+
+            .table-input {
+              border: 1px solid #d1d5db;
+              border-radius: 10px;
+              padding: 8px 9px;
+              font-size: 14px;
+              background: white;
+            }
+
+            th {
+              white-space: nowrap;
+            }
+          `}</style>
         </section>
       </main>
     </>
