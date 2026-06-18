@@ -12,78 +12,78 @@ const supabase =
     : null;
 
 const worldCupMatches = [
-  "🇲🇽 墨西哥 vs 🇿🇦 南非",
-  "🇰🇷 南韓 vs 🇨🇿 捷克",
-  "🇨🇦 加拿大 vs 🇧🇦 波士尼亞",
-  "🇺🇸 美國 vs 🇵🇾 巴拉圭",
-  "🇶🇦 卡達 vs 🇨🇭 瑞士",
-  "🇧🇷 巴西 vs 🇲🇦 摩洛哥",
-  "🇭🇹 海地 vs 🏴 蘇格蘭",
-  "🇦🇺 澳洲 vs 🇹🇷 土耳其",
-  "🇩🇪 德國 vs 🇨🇼 庫拉索",
-  "🇳🇱 荷蘭 vs 🇯🇵 日本",
-  "🇨🇮 象牙海岸 vs 🇪🇨 厄瓜多",
-  "🇸🇪 瑞典 vs 🇹🇳 突尼西亞",
-  "🇪🇸 西班牙 vs 🇨🇻 維德角",
-  "🇧🇪 比利時 vs 🇪🇬 埃及",
-  "🇸🇦 沙烏地阿拉伯 vs 🇺🇾 烏拉圭",
-  "🇮🇷 伊朗 vs 🇳🇿 紐西蘭",
-  "🇫🇷 法國 vs 🇸🇳 塞內加爾",
-  "🇮🇶 伊拉克 vs 🇳🇴 挪威",
-  "🇦🇷 阿根廷 vs 🇩🇿 阿爾及利亞",
-  "🇦🇹 奧地利 vs 🇯🇴 約旦",
-  "🇵🇹 葡萄牙 vs 🇨🇩 剛果民主共和國",
-  "🏴 英格蘭 vs 🇭🇷 克羅埃西亞",
-  "🇬🇭 迦納 vs 🇵🇦 巴拿馬",
-  "🇺🇿 烏茲別克 vs 🇨🇴 哥倫比亞",
-  "🇨🇿 捷克 vs 🇿🇦 南非",
-  "🇨🇭 瑞士 vs 🇧🇦 波士尼亞",
-  "🇨🇦 加拿大 vs 🇶🇦 卡達",
-  "🇲🇽 墨西哥 vs 🇰🇷 南韓",
-  "🇺🇸 美國 vs 🇦🇺 澳洲",
-  "🏴 蘇格蘭 vs 🇲🇦 摩洛哥",
-  "🇧🇷 巴西 vs 🇭🇹 海地",
-  "🇹🇷 土耳其 vs 🇵🇾 巴拉圭",
-  "🇳🇱 荷蘭 vs 🇸🇪 瑞典",
-  "🇩🇪 德國 vs 🇨🇮 象牙海岸",
-  "🇪🇨 厄瓜多 vs 🇨🇼 庫拉索",
-  "🇹🇳 突尼西亞 vs 🇯🇵 日本",
-  "🇪🇸 西班牙 vs 🇸🇦 沙烏地阿拉伯",
-  "🇧🇪 比利時 vs 🇮🇷 伊朗",
-  "🇺🇾 烏拉圭 vs 🇨🇻 維德角",
-  "🇳🇿 紐西蘭 vs 🇪🇬 埃及",
-  "🇦🇷 阿根廷 vs 🇦🇹 奧地利",
-  "🇫🇷 法國 vs 🇮🇶 伊拉克",
-  "🇳🇴 挪威 vs 🇸🇳 塞內加爾",
-  "🇯🇴 約旦 vs 🇩🇿 阿爾及利亞",
-  "🇵🇹 葡萄牙 vs 🇺🇿 烏茲別克",
-  "🏴 英格蘭 vs 🇬🇭 迦納",
-  "🇵🇦 巴拿馬 vs 🇭🇷 克羅埃西亞",
-  "🇨🇴 哥倫比亞 vs 🇨🇩 剛果民主共和國",
-  "🇨🇭 瑞士 vs 🇨🇦 加拿大",
-  "🇧🇦 波士尼亞 vs 🇶🇦 卡達",
-  "🏴 蘇格蘭 vs 🇧🇷 巴西",
-  "🇲🇦 摩洛哥 vs 🇭🇹 海地",
-  "🇨🇿 捷克 vs 🇲🇽 墨西哥",
-  "🇿🇦 南非 vs 🇰🇷 南韓",
-  "🇪🇨 厄瓜多 vs 🇩🇪 德國",
-  "🇨🇼 庫拉索 vs 🇨🇮 象牙海岸",
-  "🇹🇳 突尼西亞 vs 🇳🇱 荷蘭",
-  "🇯🇵 日本 vs 🇸🇪 瑞典",
-  "🇹🇷 土耳其 vs 🇺🇸 美國",
-  "🇵🇾 巴拉圭 vs 🇦🇺 澳洲",
-  "🇳🇴 挪威 vs 🇫🇷 法國",
-  "🇸🇳 塞內加爾 vs 🇮🇶 伊拉克",
-  "🇺🇾 烏拉圭 vs 🇪🇸 西班牙",
-  "🇨🇻 維德角 vs 🇸🇦 沙烏地阿拉伯",
-  "🇳🇿 紐西蘭 vs 🇧🇪 比利時",
-  "🇪🇬 埃及 vs 🇮🇷 伊朗",
-  "🇵🇦 巴拿馬 vs 🏴 英格蘭",
-  "🇭🇷 克羅埃西亞 vs 🇬🇭 迦納",
-  "🇨🇴 哥倫比亞 vs 🇵🇹 葡萄牙",
-  "🇨🇩 剛果民主共和國 vs 🇺🇿 烏茲別克",
-  "🇯🇴 約旦 vs 🇦🇷 阿根廷",
-  "🇩🇿 阿爾及利亞 vs 🇦🇹 奧地利",
+  "墨西哥 VS 南非",
+  "南韓 VS 捷克",
+  "加拿大 VS 波士尼亞",
+  "美國 VS 巴拉圭",
+  "卡達 VS 瑞士",
+  "巴西 VS 摩洛哥",
+  "海地 VS 蘇格蘭",
+  "澳洲 VS 土耳其",
+  "德國 VS 庫拉索",
+  "荷蘭 VS 日本",
+  "象牙海岸 VS 厄瓜多",
+  "瑞典 VS 突尼西亞",
+  "西班牙 VS 維德角",
+  "比利時 VS 埃及",
+  "沙烏地阿拉伯 VS 烏拉圭",
+  "伊朗 VS 紐西蘭",
+  "法國 VS 塞內加爾",
+  "伊拉克 VS 挪威",
+  "阿根廷 VS 阿爾及利亞",
+  "奧地利 VS 約旦",
+  "葡萄牙 VS 剛果民主共和國",
+  "英格蘭 VS 克羅埃西亞",
+  "迦納 VS 巴拿馬",
+  "烏茲別克 VS 哥倫比亞",
+  "捷克 VS 南非",
+  "瑞士 VS 波士尼亞",
+  "加拿大 VS 卡達",
+  "墨西哥 VS 南韓",
+  "美國 VS 澳洲",
+  "蘇格蘭 VS 摩洛哥",
+  "巴西 VS 海地",
+  "土耳其 VS 巴拉圭",
+  "荷蘭 VS 瑞典",
+  "德國 VS 象牙海岸",
+  "厄瓜多 VS 庫拉索",
+  "突尼西亞 VS 日本",
+  "西班牙 VS 沙烏地阿拉伯",
+  "比利時 VS 伊朗",
+  "烏拉圭 VS 維德角",
+  "紐西蘭 VS 埃及",
+  "阿根廷 VS 奧地利",
+  "法國 VS 伊拉克",
+  "挪威 VS 塞內加爾",
+  "約旦 VS 阿爾及利亞",
+  "葡萄牙 VS 烏茲別克",
+  "英格蘭 VS 迦納",
+  "巴拿馬 VS 克羅埃西亞",
+  "哥倫比亞 VS 剛果民主共和國",
+  "瑞士 VS 加拿大",
+  "波士尼亞 VS 卡達",
+  "蘇格蘭 VS 巴西",
+  "摩洛哥 VS 海地",
+  "捷克 VS 墨西哥",
+  "南非 VS 南韓",
+  "厄瓜多 VS 德國",
+  "庫拉索 VS 象牙海岸",
+  "突尼西亞 VS 荷蘭",
+  "日本 VS 瑞典",
+  "土耳其 VS 美國",
+  "巴拉圭 VS 澳洲",
+  "挪威 VS 法國",
+  "塞內加爾 VS 伊拉克",
+  "烏拉圭 VS 西班牙",
+  "維德角 VS 沙烏地阿拉伯",
+  "紐西蘭 VS 比利時",
+  "埃及 VS 伊朗",
+  "巴拿馬 VS 英格蘭",
+  "克羅埃西亞 VS 迦納",
+  "哥倫比亞 VS 葡萄牙",
+  "剛果民主共和國 VS 烏茲別克",
+  "約旦 VS 阿根廷",
+  "阿爾及利亞 VS 奧地利",
 ];
 
 const initialForm = {
@@ -125,9 +125,7 @@ export default function Tracker() {
   const [matchSearch, setMatchSearch] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [scoreLoading, setScoreLoading] = useState(false);
   const [error, setError] = useState("");
-  const [scoreMessage, setScoreMessage] = useState("");
 
   const filteredMatches = useMemo(() => {
     const keyword = matchSearch.trim();
@@ -167,6 +165,7 @@ export default function Tracker() {
     const wins = settled.filter((b) => b.result === "win").length;
     const winRate = settled.length ? (wins / settled.length) * 100 : 0;
     const roi = totalStake ? (totalPL / totalStake) * 100 : 0;
+
     return { totalStake, totalPL, winRate, roi };
   }, [bets]);
 
@@ -213,68 +212,29 @@ export default function Tracker() {
     if (error) setError(error.message);
     else await loadBets();
   }
-function normalizeMatchName(value) {
-  return String(value || "")
-    .toLowerCase()
-    .replace(/ｖｓ/g, "vs")
-    .replace(/對/g, "vs")
-    .replace(/\s+/g, "")
-    .trim();
-}
 
-function getScoreByMatchName(scores, matchName) {
-  if (scores[matchName]) return scores[matchName];
-
-  const target = normalizeMatchName(matchName);
-
-  for (const [key, value] of Object.entries(scores)) {
-    if (normalizeMatchName(key) === target) {
-      return value;
-    }
-  }
-
-  return "";
-}
-
-  async function fetchAndSyncScores() {
+  async function updateScore(id, actual_score) {
     if (!supabase) return;
 
-    setScoreLoading(true);
-    setError("");
-    setScoreMessage("抓取賽果中...");
+    const { error } = await supabase
+      .from("bets")
+      .update({ actual_score })
+      .eq("id", id);
 
-    try {
-      const res = await fetch("/api/scores");
-      const data = await res.json();
+    if (error) setError(error.message);
+    else await loadBets();
+  }
 
-      if (!res.ok) {
-        throw new Error(data.error || "抓取賽果失敗");
-      }
+  async function updateNote(id, note) {
+    if (!supabase) return;
 
-      const scores = data.scores || {};
-      let updatedCount = 0;
+    const { error } = await supabase
+      .from("bets")
+      .update({ note })
+      .eq("id", id);
 
-      for (const bet of bets) {
-        const score = getScoreByMatchName(scores, bet.match_name);
-        if (score && score !== bet.actual_score) {
-          const { error } = await supabase
-            .from("bets")
-            .update({ actual_score: score })
-            .eq("id", bet.id);
-
-          if (error) throw error;
-          updatedCount++;
-        }
-      }
-
-      await loadBets();
-      setScoreMessage(`賽果更新完成，共更新 ${updatedCount} 筆。`);
-    } catch (err) {
-      setError(err.message);
-      setScoreMessage("");
-    }
-
-    setScoreLoading(false);
+    if (error) setError(error.message);
+    else await loadBets();
   }
 
   async function deleteBet(id) {
@@ -412,7 +372,11 @@ function getScoreByMatchName(scores, matchName) {
 
             <div>
               <label>實際比分</label>
-              <input value="比賽結束後按抓取賽果更新" disabled />
+              <input
+                value={form.actual_score}
+                onChange={(e) => setForm({ ...form, actual_score: e.target.value })}
+                placeholder="例：2-1，可先不填"
+              />
             </div>
 
             <div>
@@ -492,9 +456,8 @@ function getScoreByMatchName(scores, matchName) {
           </form>
 
           <p className="note">
-            V5 更新：只自動抓取實際比分，不自動判斷輸贏；結果仍由你手動選擇。
+            V6 更新：實際比分改為手動填寫，結果仍由你手動選擇。備註欄也可直接修改或清空。
           </p>
-          {scoreMessage && <p className="note">{scoreMessage}</p>}
           {error && <p className="error">{error}</p>}
         </section>
 
@@ -502,9 +465,6 @@ function getScoreByMatchName(scores, matchName) {
           <div className="actions">
             <button className="secondary" onClick={loadBets} disabled={loading}>
               重新整理
-            </button>
-            <button className="secondary" onClick={fetchAndSyncScores} disabled={scoreLoading}>
-              {scoreLoading ? "抓取中..." : "抓取賽果"}
             </button>
             <button className="secondary" onClick={exportCSV}>
               匯出 CSV
@@ -538,7 +498,14 @@ function getScoreByMatchName(scores, matchName) {
                     <tr key={bet.id}>
                       <td>{bet.bet_date}</td>
                       <td>{bet.match_name}</td>
-                      <td>{bet.actual_score || "未更新"}</td>
+                      <td>
+                        <input
+                          className="table-input"
+                          defaultValue={bet.actual_score || ""}
+                          placeholder="例：2-1"
+                          onBlur={(e) => updateScore(bet.id, e.target.value)}
+                        />
+                      </td>
                       <td>{bet.bet_type}</td>
                       <td>{bet.selection}</td>
                       <td>{Number(bet.odds).toFixed(2)}</td>
@@ -557,7 +524,14 @@ function getScoreByMatchName(scores, matchName) {
                       <td className={pl >= 0 ? "profit" : "loss"}>
                         {pl.toLocaleString()}
                       </td>
-                      <td>{bet.note}</td>
+                      <td>
+                        <input
+                          className="table-input"
+                          defaultValue={bet.note || ""}
+                          placeholder="可不填"
+                          onBlur={(e) => updateNote(bet.id, e.target.value)}
+                        />
+                      </td>
                       <td>
                         <button className="danger" onClick={() => deleteBet(bet.id)}>
                           刪除
