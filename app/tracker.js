@@ -36,7 +36,6 @@ const worldCupMatches = [
   "英格蘭 VS 克羅埃西亞",
   "迦納 VS 巴拿馬",
   "烏茲別克 VS 哥倫比亞",
-
   "捷克 VS 南非",
   "瑞士 VS 波士尼亞",
   "加拿大 VS 卡達",
@@ -61,7 +60,6 @@ const worldCupMatches = [
   "英格蘭 VS 迦納",
   "巴拿馬 VS 克羅埃西亞",
   "哥倫比亞 VS 剛果民主共和國",
-
   "瑞士 VS 加拿大",
   "波士尼亞 VS 卡達",
   "蘇格蘭 VS 巴西",
@@ -124,9 +122,7 @@ function calcPL(bet) {
 function formatDateShort(dateString) {
   if (!dateString) return "";
   const parts = String(dateString).split("-");
-  if (parts.length >= 3) {
-    return `${Number(parts[1])}/${Number(parts[2])}`;
-  }
+  if (parts.length >= 3) return `${Number(parts[1])}/${Number(parts[2])}`;
   return dateString;
 }
 
@@ -151,10 +147,7 @@ export default function Tracker() {
   const filteredMatches = useMemo(() => {
     const keyword = matchSearch.trim();
     if (!keyword) return [];
-
-    return worldCupMatches
-      .filter((match) => match.includes(keyword))
-      .slice(0, 10);
+    return worldCupMatches.filter((match) => match.includes(keyword)).slice(0, 10);
   }, [matchSearch]);
 
   async function loadBets() {
@@ -172,11 +165,8 @@ export default function Tracker() {
       .order("bet_date", { ascending: false })
       .order("created_at", { ascending: false });
 
-    if (error) {
-      setError(error.message);
-    } else {
-      setBets(data || []);
-    }
+    if (error) setError(error.message);
+    else setBets(data || []);
 
     setLoading(false);
   }
@@ -236,11 +226,8 @@ export default function Tracker() {
       .update({ result })
       .eq("id", id);
 
-    if (error) {
-      setError(error.message);
-    } else {
-      await loadBets();
-    }
+    if (error) setError(error.message);
+    else await loadBets();
   }
 
   async function updateScore(id, actual_score) {
@@ -251,11 +238,8 @@ export default function Tracker() {
       .update({ actual_score })
       .eq("id", id);
 
-    if (error) {
-      setError(error.message);
-    } else {
-      await loadBets();
-    }
+    if (error) setError(error.message);
+    else await loadBets();
   }
 
   async function updateNote(id, note) {
@@ -266,11 +250,8 @@ export default function Tracker() {
       .update({ note })
       .eq("id", id);
 
-    if (error) {
-      setError(error.message);
-    } else {
-      await loadBets();
-    }
+    if (error) setError(error.message);
+    else await loadBets();
   }
 
   async function deleteBet(id) {
@@ -279,11 +260,8 @@ export default function Tracker() {
 
     const { error } = await supabase.from("bets").delete().eq("id", id);
 
-    if (error) {
-      setError(error.message);
-    } else {
-      await loadBets();
-    }
+    if (error) setError(error.message);
+    else await loadBets();
   }
 
   function exportCSV() {
@@ -346,9 +324,19 @@ export default function Tracker() {
 
         <section className="panel">
           <h2>新增投注</h2>
-          <form className="form-grid" onSubmit={addBet}>
-            <div>
-              <label>日期</label>
+          <form className="aligned-form" onSubmit={addBet}>
+            <div className="form-head date-col">日期</div>
+            <div className="form-head match-col">比賽搜尋</div>
+            <div className="form-head score-col">實際比分</div>
+            <div className="form-head type-col">玩法</div>
+            <div className="form-head selection-col">投注內容</div>
+            <div className="form-head odds-col">賠率</div>
+            <div className="form-head stake-col">注碼</div>
+            <div className="form-head result-col">結果</div>
+            <div className="form-head note-col">備註</div>
+            <div className="form-head action-col">操作</div>
+
+            <div className="form-cell date-col">
               <input
                 type="date"
                 value={form.bet_date}
@@ -357,8 +345,7 @@ export default function Tracker() {
               />
             </div>
 
-            <div style={{ position: "relative" }}>
-              <label>比賽搜尋</label>
+            <div className="form-cell match-col suggestion-wrap">
               <input
                 value={matchSearch}
                 onFocus={() => setShowSuggestions(true)}
@@ -367,26 +354,12 @@ export default function Tracker() {
                   setForm({ ...form, match_name: "" });
                   setShowSuggestions(true);
                 }}
-                placeholder="輸入隊名，例如：巴西、阿根廷、西班牙"
+                placeholder="輸入隊名，例如：巴西"
                 required
               />
 
               {showSuggestions && filteredMatches.length > 0 && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "70px",
-                    left: 0,
-                    right: 0,
-                    background: "white",
-                    border: "1px solid #d1d5db",
-                    borderRadius: "10px",
-                    boxShadow: "0 8px 24px rgba(0,0,0,.12)",
-                    zIndex: 20,
-                    maxHeight: "260px",
-                    overflowY: "auto",
-                  }}
-                >
+                <div className="suggestions">
                   {filteredMatches.map((match) => (
                     <div
                       key={match}
@@ -395,12 +368,7 @@ export default function Tracker() {
                         setMatchSearch(match);
                         setShowSuggestions(false);
                       }}
-                      style={{
-                        padding: "11px",
-                        cursor: "pointer",
-                        borderBottom: "1px solid #f3f4f6",
-                        fontSize: "14px",
-                      }}
+                      className="suggestion-item"
                     >
                       {match}
                     </div>
@@ -409,39 +377,20 @@ export default function Tracker() {
               )}
 
               {matchSearch && showSuggestions && filteredMatches.length === 0 && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "70px",
-                    left: 0,
-                    right: 0,
-                    background: "white",
-                    border: "1px solid #d1d5db",
-                    borderRadius: "10px",
-                    boxShadow: "0 8px 24px rgba(0,0,0,.12)",
-                    zIndex: 20,
-                    padding: "11px",
-                    color: "#6b7280",
-                    fontSize: "14px",
-                  }}
-                >
-                  找不到符合的比賽
-                </div>
+                <div className="suggestions empty-suggestion">找不到符合的比賽</div>
               )}
             </div>
 
-            <div>
-              <label>實際比分</label>
+            <div className="form-cell score-col">
               <input
                 value={form.actual_score}
                 onChange={(e) => setForm({ ...form, actual_score: e.target.value })}
-                placeholder="例：2-1"
+                placeholder="2-1"
                 maxLength={6}
               />
             </div>
 
-            <div>
-              <label>玩法</label>
+            <div className="form-cell type-col">
               <select
                 value={form.bet_type}
                 onChange={(e) => setForm({ ...form, bet_type: e.target.value })}
@@ -455,8 +404,7 @@ export default function Tracker() {
               </select>
             </div>
 
-            <div>
-              <label>投注內容</label>
+            <div className="form-cell selection-col">
               <input
                 value={form.selection}
                 onChange={(e) => setForm({ ...form, selection: e.target.value })}
@@ -465,8 +413,7 @@ export default function Tracker() {
               />
             </div>
 
-            <div>
-              <label>賠率</label>
+            <div className="form-cell odds-col">
               <input
                 type="number"
                 step="0.01"
@@ -477,8 +424,7 @@ export default function Tracker() {
               />
             </div>
 
-            <div>
-              <label>注碼</label>
+            <div className="form-cell stake-col">
               <input
                 type="number"
                 step="1"
@@ -489,8 +435,7 @@ export default function Tracker() {
               />
             </div>
 
-            <div>
-              <label>結果</label>
+            <div className="form-cell result-col">
               <select
                 value={form.result}
                 onChange={(e) => setForm({ ...form, result: e.target.value })}
@@ -502,21 +447,22 @@ export default function Tracker() {
               </select>
             </div>
 
-            <div>
-              <label>備註</label>
+            <div className="form-cell note-col">
               <input
                 value={form.note}
                 onChange={(e) => setForm({ ...form, note: e.target.value })}
               />
             </div>
 
-            <button disabled={loading} type="submit">
-              {loading ? "處理中..." : "新增"}
-            </button>
+            <div className="form-cell action-col">
+              <button disabled={loading} type="submit">
+                {loading ? "處理中" : "新增"}
+              </button>
+            </div>
           </form>
 
           <p className="note">
-            V6.1 更新：日期精簡顯示、比分欄縮小、備註預設空白、比賽主客隊上下排列。
+            V6.2 更新：新增投注區與下方表格欄位對齊，投注紀錄比賽欄已移除「VS」。
           </p>
           {error && <p className="error">{error}</p>}
         </section>
@@ -541,14 +487,14 @@ export default function Tracker() {
                   <th className="date-col">日期</th>
                   <th className="match-col">比賽</th>
                   <th className="score-col">實際比分</th>
-                  <th>玩法</th>
-                  <th>投注內容</th>
+                  <th className="type-col">玩法</th>
+                  <th className="selection-col">投注內容</th>
                   <th className="odds-col">賠率</th>
-                  <th>注碼</th>
-                  <th>結果</th>
-                  <th>損益</th>
+                  <th className="stake-col">注碼</th>
+                  <th className="result-col">結果</th>
+                  <th className="pl-col">損益</th>
                   <th className="note-col">備註</th>
-                  <th>操作</th>
+                  <th className="action-col">操作</th>
                 </tr>
               </thead>
               <tbody>
@@ -560,7 +506,7 @@ export default function Tracker() {
                       <td className="date-cell">{formatDateShort(bet.bet_date)}</td>
                       <td className="match-cell">
                         <div className="team-line">{homeTeam}</div>
-                        {awayTeam && <div className="team-line away-team">VS {awayTeam}</div>}
+                        {awayTeam && <div className="team-line away-team">{awayTeam}</div>}
                       </td>
                       <td className="score-cell">
                         <input
@@ -615,56 +561,85 @@ export default function Tracker() {
           </div>
 
           <style jsx>{`
+            .aligned-form {
+              display: grid;
+              grid-template-columns: 90px 170px 95px 100px 160px 90px 95px 100px 150px 78px;
+              column-gap: 14px;
+              row-gap: 9px;
+              align-items: end;
+              overflow-x: auto;
+              padding-bottom: 4px;
+            }
+            .form-head {
+              font-size: 13px;
+              font-weight: 700;
+              color: #334155;
+              white-space: nowrap;
+            }
+            .form-cell input,
+            .form-cell select {
+              width: 100%;
+              min-width: 0;
+              box-sizing: border-box;
+            }
+            .suggestion-wrap {
+              position: relative;
+            }
+            .suggestions {
+              position: absolute;
+              top: 46px;
+              left: 0;
+              right: 0;
+              background: white;
+              border: 1px solid #d1d5db;
+              border-radius: 10px;
+              box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+              z-index: 20;
+              max-height: 260px;
+              overflow-y: auto;
+            }
+            .suggestion-item {
+              padding: 11px;
+              cursor: pointer;
+              border-bottom: 1px solid #f3f4f6;
+              font-size: 14px;
+            }
+            .empty-suggestion {
+              padding: 11px;
+              color: #6b7280;
+              font-size: 14px;
+            }
             .bet-table {
               table-layout: fixed;
               width: 100%;
             }
-
-            .date-col {
-              width: 72px;
-            }
-
-            .match-col {
-              width: 160px;
-            }
-
-            .score-col {
-              width: 95px;
-            }
-
-            .odds-col {
-              width: 70px;
-              white-space: nowrap;
-            }
-
-            .note-col {
-              width: 150px;
-            }
-
+            .date-col { width: 90px; }
+            .match-col { width: 170px; }
+            .score-col { width: 95px; }
+            .type-col { width: 100px; }
+            .selection-col { width: 160px; }
+            .odds-col { width: 90px; white-space: nowrap; }
+            .stake-col { width: 95px; }
+            .result-col { width: 100px; }
+            .pl-col { width: 90px; }
+            .note-col { width: 150px; }
+            .action-col { width: 78px; }
             .date-cell {
               white-space: nowrap;
               font-weight: 600;
             }
-
             .match-cell {
               line-height: 1.45;
               white-space: normal;
             }
-
             .team-line {
               display: block;
               font-weight: 600;
             }
-
             .away-team {
               color: #4b5563;
-              font-weight: 500;
+              font-weight: 600;
             }
-
-            .score-cell {
-              width: 95px;
-            }
-
             .score-input {
               width: 76px;
               min-width: 76px;
@@ -673,18 +648,15 @@ export default function Tracker() {
               padding-left: 6px;
               padding-right: 6px;
             }
-
             .note-input {
               width: 130px;
               min-width: 130px;
               max-width: 130px;
             }
-
             .odds-cell {
               white-space: nowrap;
               text-align: center;
             }
-
             .table-input {
               border: 1px solid #d1d5db;
               border-radius: 10px;
@@ -692,10 +664,7 @@ export default function Tracker() {
               font-size: 14px;
               background: white;
             }
-
-            th {
-              white-space: nowrap;
-            }
+            th { white-space: nowrap; }
           `}</style>
         </section>
       </main>
