@@ -445,7 +445,7 @@ export default function Tracker() {
           </form>
 
           <p className="note">
-            V6.4 更新：新增投注單行顯示，投注紀錄隱藏備註並壓縮欄距。
+            V6.5 更新：電腦版維持單行，手機版新增投注改為每欄一行，方便操作。
           </p>
           {error && <p className="error">{error}</p>}
         </section>
@@ -776,6 +776,157 @@ export default function Tracker() {
                 width: 115px;
               }
             }
+
+            @media (max-width: 768px) {
+              header {
+                width: 100%;
+                min-width: 0;
+              }
+
+              header h1 {
+                font-size: 16px;
+                padding-left: 12px;
+                white-space: nowrap;
+              }
+
+              main {
+                width: 100%;
+                max-width: 100%;
+                padding: 12px 10px;
+                box-sizing: border-box;
+              }
+
+              .cards {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+                width: 100%;
+              }
+
+              .card {
+                min-width: 0;
+                padding: 14px 12px;
+              }
+
+              .card .value,
+              .value {
+                font-size: 22px;
+              }
+
+              .panel {
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
+                padding: 16px 12px;
+                overflow: hidden;
+              }
+
+              .aligned-form {
+                display: block !important;
+                width: 100%;
+                overflow: visible;
+              }
+
+              .form-field,
+              .date-field,
+              .match-field,
+              .score-field,
+              .type-field,
+              .selection-field,
+              .odds-field,
+              .stake-field,
+              .result-field,
+              .note-field,
+              .action-field {
+                width: 100% !important;
+                margin-bottom: 12px;
+              }
+
+              .form-field label {
+                margin-bottom: 6px;
+                font-size: 13px;
+              }
+
+              .form-field input,
+              .form-field select {
+                width: 100% !important;
+                height: 44px;
+                font-size: 15px;
+              }
+
+              .action-field label {
+                display: none;
+              }
+
+              .action-field button {
+                width: 100%;
+                height: 46px;
+                margin-top: 2px;
+              }
+
+              .suggestions {
+                top: 68px;
+              }
+
+              .actions {
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+              }
+
+              .actions button {
+                flex: 1 1 120px;
+              }
+
+              .table-wrap {
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch;
+              }
+
+              .bet-table {
+                min-width: 720px;
+                font-size: 12px;
+              }
+
+              .bet-table th,
+              .bet-table td {
+                padding: 8px 6px;
+              }
+
+              .match-col {
+                width: 105px;
+              }
+
+              .selection-col {
+                width: 150px;
+              }
+
+              .score-col {
+                width: 66px;
+              }
+
+              .score-input {
+                width: 52px;
+                min-width: 52px;
+                max-width: 52px;
+              }
+
+              .result-col {
+                width: 68px;
+              }
+
+              .bet-table select {
+                width: 58px;
+                min-width: 58px;
+                font-size: 12px;
+              }
+
+              .danger {
+                padding: 7px 8px !important;
+                font-size: 12px !important;
+              }
+            }
+
           `}</style>
         </section>
       </main>
