@@ -445,7 +445,7 @@ export default function Tracker() {
           </form>
 
           <p className="note">
-            V6.3 更新：新增投注改為單行排列，投注紀錄比賽欄已移除 VS。
+            V6.4 更新：新增投注單行顯示，投注紀錄隱藏備註並壓縮欄距。
           </p>
           {error && <p className="error">{error}</p>}
         </section>
@@ -476,7 +476,7 @@ export default function Tracker() {
                   <th className="stake-col">注碼</th>
                   <th className="result-col">結果</th>
                   <th className="pl-col">損益</th>
-                  <th className="note-col">備註</th>
+                  <th className="note-col hidden-note">備註</th>
                   <th className="action-col">操作</th>
                 </tr>
               </thead>
@@ -517,7 +517,7 @@ export default function Tracker() {
                       <td className={pl >= 0 ? "profit" : "loss"}>
                         {pl.toLocaleString()}
                       </td>
-                      <td>
+                      <td className="hidden-note">
                         <input
                           className="table-input note-input"
                           defaultValue={bet.note || ""}
@@ -543,24 +543,26 @@ export default function Tracker() {
             </table>
           </div>
 
-          <style jsx>{`
+          <style jsx global>{`
             .aligned-form {
-              display: flex;
-              flex-wrap: nowrap;
-              gap: 12px;
-              align-items: flex-end;
-              overflow-x: auto;
-              padding-bottom: 8px;
+              display: grid !important;
+              grid-template-columns: 92px 145px 70px 82px minmax(135px, 1fr) 62px 72px 82px 110px 68px;
+              column-gap: 8px;
+              row-gap: 8px;
+              align-items: end;
+              width: 100%;
+              max-width: 100%;
+              overflow: visible;
             }
 
             .form-field {
-              flex: 0 0 auto;
+              min-width: 0;
             }
 
             .form-field label {
               display: block;
-              margin-bottom: 7px;
-              font-size: 13px;
+              margin-bottom: 6px;
+              font-size: 12px;
               font-weight: 700;
               color: #334155;
               white-space: nowrap;
@@ -570,51 +572,18 @@ export default function Tracker() {
             .form-field select {
               width: 100%;
               min-width: 0;
+              height: 40px;
               box-sizing: border-box;
-            }
-
-            .date-field {
-              width: 145px;
-            }
-
-            .match-field {
-              width: 180px;
-            }
-
-            .score-field {
-              width: 88px;
-            }
-
-            .type-field {
-              width: 105px;
-            }
-
-            .selection-field {
-              width: 180px;
-            }
-
-            .odds-field {
-              width: 90px;
-            }
-
-            .stake-field {
-              width: 95px;
-            }
-
-            .result-field {
-              width: 105px;
-            }
-
-            .note-field {
-              width: 150px;
-            }
-
-            .action-field {
-              width: 78px;
+              font-size: 13px;
+              padding-left: 9px;
+              padding-right: 9px;
             }
 
             .action-field button {
               width: 100%;
+              height: 40px;
+              padding-left: 0;
+              padding-right: 0;
             }
 
             .suggestion-wrap {
@@ -623,7 +592,7 @@ export default function Tracker() {
 
             .suggestions {
               position: absolute;
-              top: 70px;
+              top: 64px;
               left: 0;
               right: 0;
               background: white;
@@ -636,101 +605,117 @@ export default function Tracker() {
             }
 
             .suggestion-item {
-              padding: 11px;
+              padding: 10px;
               cursor: pointer;
               border-bottom: 1px solid #f3f4f6;
-              font-size: 14px;
+              font-size: 13px;
             }
 
             .empty-suggestion {
-              padding: 11px;
+              padding: 10px;
               color: #6b7280;
-              font-size: 14px;
+              font-size: 13px;
+            }
+
+            .table-wrap {
+              overflow-x: hidden !important;
             }
 
             .bet-table {
               table-layout: fixed;
               width: 100%;
+              font-size: 13px;
+            }
+
+            .bet-table th,
+            .bet-table td {
+              padding: 9px 8px;
+              vertical-align: middle;
             }
 
             .date-col {
-              width: 90px;
+              width: 58px;
             }
 
             .match-col {
-              width: 170px;
+              width: 125px;
             }
 
             .score-col {
-              width: 95px;
+              width: 72px;
             }
 
             .type-col {
-              width: 100px;
+              width: 58px;
             }
 
             .selection-col {
-              width: 160px;
+              width: 190px;
             }
 
             .odds-col {
-              width: 90px;
+              width: 58px;
               white-space: nowrap;
             }
 
             .stake-col {
-              width: 95px;
+              width: 72px;
             }
 
             .result-col {
-              width: 100px;
+              width: 78px;
             }
 
             .pl-col {
-              width: 90px;
+              width: 76px;
             }
 
             .note-col {
-              width: 150px;
+              width: 0;
             }
 
             .action-col {
-              width: 78px;
+              width: 62px;
+            }
+
+            .hidden-note {
+              display: none !important;
             }
 
             .date-cell {
               white-space: nowrap;
-              font-weight: 600;
+              font-weight: 700;
             }
 
             .match-cell {
-              line-height: 1.45;
+              line-height: 1.35;
               white-space: normal;
             }
 
             .team-line {
               display: block;
-              font-weight: 600;
+              font-weight: 700;
             }
 
             .away-team {
-              color: #4b5563;
-              font-weight: 600;
+              color: #334155;
+              font-weight: 700;
             }
 
             .score-input {
-              width: 76px;
-              min-width: 76px;
-              max-width: 76px;
+              width: 56px;
+              min-width: 56px;
+              max-width: 56px;
+              height: 34px;
               text-align: center;
-              padding-left: 6px;
-              padding-right: 6px;
+              padding-left: 4px;
+              padding-right: 4px;
             }
 
             .note-input {
-              width: 130px;
-              min-width: 130px;
-              max-width: 130px;
+              width: 90px;
+              min-width: 90px;
+              max-width: 90px;
             }
 
             .odds-cell {
@@ -740,14 +725,56 @@ export default function Tracker() {
 
             .table-input {
               border: 1px solid #d1d5db;
-              border-radius: 10px;
-              padding: 8px 9px;
-              font-size: 14px;
+              border-radius: 9px;
+              padding: 7px 8px;
+              font-size: 13px;
               background: white;
+            }
+
+            .bet-table select {
+              width: 68px;
+              min-width: 68px;
+              height: 36px;
+              font-size: 13px;
+              padding: 5px 6px;
+            }
+
+            .danger {
+              padding: 8px 10px !important;
+              font-size: 13px !important;
+              min-width: 0 !important;
             }
 
             th {
               white-space: nowrap;
+            }
+
+            @media (max-width: 1280px) {
+              main {
+                max-width: 1180px;
+              }
+
+              .aligned-form {
+                grid-template-columns: 90px 135px 68px 78px minmax(125px, 1fr) 58px 68px 78px 96px 62px;
+                column-gap: 6px;
+              }
+
+              .bet-table {
+                font-size: 12.5px;
+              }
+
+              .bet-table th,
+              .bet-table td {
+                padding: 8px 6px;
+              }
+
+              .selection-col {
+                width: 175px;
+              }
+
+              .match-col {
+                width: 115px;
+              }
             }
           `}</style>
         </section>
