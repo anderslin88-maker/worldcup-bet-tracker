@@ -182,7 +182,6 @@ export default function Tracker() {
     const wins = settled.filter((b) => b.result === "win").length;
     const winRate = settled.length ? (wins / settled.length) * 100 : 0;
     const roi = totalStake ? (totalPL / totalStake) * 100 : 0;
-
     return { totalStake, totalPL, winRate, roi };
   }, [bets]);
 
@@ -220,36 +219,21 @@ export default function Tracker() {
 
   async function updateResult(id, result) {
     if (!supabase) return;
-
-    const { error } = await supabase
-      .from("bets")
-      .update({ result })
-      .eq("id", id);
-
+    const { error } = await supabase.from("bets").update({ result }).eq("id", id);
     if (error) setError(error.message);
     else await loadBets();
   }
 
   async function updateScore(id, actual_score) {
     if (!supabase) return;
-
-    const { error } = await supabase
-      .from("bets")
-      .update({ actual_score })
-      .eq("id", id);
-
+    const { error } = await supabase.from("bets").update({ actual_score }).eq("id", id);
     if (error) setError(error.message);
     else await loadBets();
   }
 
   async function updateNote(id, note) {
     if (!supabase) return;
-
-    const { error } = await supabase
-      .from("bets")
-      .update({ note })
-      .eq("id", id);
-
+    const { error } = await supabase.from("bets").update({ note }).eq("id", id);
     if (error) setError(error.message);
     else await loadBets();
   }
@@ -259,7 +243,6 @@ export default function Tracker() {
     if (!confirm("確定刪除這筆投注？")) return;
 
     const { error } = await supabase.from("bets").delete().eq("id", id);
-
     if (error) setError(error.message);
     else await loadBets();
   }
@@ -324,19 +307,10 @@ export default function Tracker() {
 
         <section className="panel">
           <h2>新增投注</h2>
-          <form className="aligned-form" onSubmit={addBet}>
-            <div className="form-head date-col">日期</div>
-            <div className="form-head match-col">比賽搜尋</div>
-            <div className="form-head score-col">實際比分</div>
-            <div className="form-head type-col">玩法</div>
-            <div className="form-head selection-col">投注內容</div>
-            <div className="form-head odds-col">賠率</div>
-            <div className="form-head stake-col">注碼</div>
-            <div className="form-head result-col">結果</div>
-            <div className="form-head note-col">備註</div>
-            <div className="form-head action-col">操作</div>
 
-            <div className="form-cell date-col">
+          <form className="aligned-form" onSubmit={addBet}>
+            <div className="form-field date-field">
+              <label>日期</label>
               <input
                 type="date"
                 value={form.bet_date}
@@ -345,7 +319,8 @@ export default function Tracker() {
               />
             </div>
 
-            <div className="form-cell match-col suggestion-wrap">
+            <div className="form-field match-field suggestion-wrap">
+              <label>比賽搜尋</label>
               <input
                 value={matchSearch}
                 onFocus={() => setShowSuggestions(true)}
@@ -381,7 +356,8 @@ export default function Tracker() {
               )}
             </div>
 
-            <div className="form-cell score-col">
+            <div className="form-field score-field">
+              <label>實際比分</label>
               <input
                 value={form.actual_score}
                 onChange={(e) => setForm({ ...form, actual_score: e.target.value })}
@@ -390,7 +366,8 @@ export default function Tracker() {
               />
             </div>
 
-            <div className="form-cell type-col">
+            <div className="form-field type-field">
+              <label>玩法</label>
               <select
                 value={form.bet_type}
                 onChange={(e) => setForm({ ...form, bet_type: e.target.value })}
@@ -404,7 +381,8 @@ export default function Tracker() {
               </select>
             </div>
 
-            <div className="form-cell selection-col">
+            <div className="form-field selection-field">
+              <label>投注內容</label>
               <input
                 value={form.selection}
                 onChange={(e) => setForm({ ...form, selection: e.target.value })}
@@ -413,7 +391,8 @@ export default function Tracker() {
               />
             </div>
 
-            <div className="form-cell odds-col">
+            <div className="form-field odds-field">
+              <label>賠率</label>
               <input
                 type="number"
                 step="0.01"
@@ -424,7 +403,8 @@ export default function Tracker() {
               />
             </div>
 
-            <div className="form-cell stake-col">
+            <div className="form-field stake-field">
+              <label>注碼</label>
               <input
                 type="number"
                 step="1"
@@ -435,7 +415,8 @@ export default function Tracker() {
               />
             </div>
 
-            <div className="form-cell result-col">
+            <div className="form-field result-field">
+              <label>結果</label>
               <select
                 value={form.result}
                 onChange={(e) => setForm({ ...form, result: e.target.value })}
@@ -447,14 +428,16 @@ export default function Tracker() {
               </select>
             </div>
 
-            <div className="form-cell note-col">
+            <div className="form-field note-field">
+              <label>備註</label>
               <input
                 value={form.note}
                 onChange={(e) => setForm({ ...form, note: e.target.value })}
               />
             </div>
 
-            <div className="form-cell action-col">
+            <div className="form-field action-field">
+              <label>操作</label>
               <button disabled={loading} type="submit">
                 {loading ? "處理中" : "新增"}
               </button>
@@ -462,7 +445,7 @@ export default function Tracker() {
           </form>
 
           <p className="note">
-            V6.2 更新：新增投注區與下方表格欄位對齊，投注紀錄比賽欄已移除「VS」。
+            V6.3 更新：新增投注改為單行排列，投注紀錄比賽欄已移除 VS。
           </p>
           {error && <p className="error">{error}</p>}
         </section>
@@ -562,32 +545,85 @@ export default function Tracker() {
 
           <style jsx>{`
             .aligned-form {
-              display: grid;
-              grid-template-columns: 90px 170px 95px 100px 160px 90px 95px 100px 150px 78px;
-              column-gap: 14px;
-              row-gap: 9px;
-              align-items: end;
+              display: flex;
+              flex-wrap: nowrap;
+              gap: 12px;
+              align-items: flex-end;
               overflow-x: auto;
-              padding-bottom: 4px;
+              padding-bottom: 8px;
             }
-            .form-head {
+
+            .form-field {
+              flex: 0 0 auto;
+            }
+
+            .form-field label {
+              display: block;
+              margin-bottom: 7px;
               font-size: 13px;
               font-weight: 700;
               color: #334155;
               white-space: nowrap;
             }
-            .form-cell input,
-            .form-cell select {
+
+            .form-field input,
+            .form-field select {
               width: 100%;
               min-width: 0;
               box-sizing: border-box;
             }
+
+            .date-field {
+              width: 145px;
+            }
+
+            .match-field {
+              width: 180px;
+            }
+
+            .score-field {
+              width: 88px;
+            }
+
+            .type-field {
+              width: 105px;
+            }
+
+            .selection-field {
+              width: 180px;
+            }
+
+            .odds-field {
+              width: 90px;
+            }
+
+            .stake-field {
+              width: 95px;
+            }
+
+            .result-field {
+              width: 105px;
+            }
+
+            .note-field {
+              width: 150px;
+            }
+
+            .action-field {
+              width: 78px;
+            }
+
+            .action-field button {
+              width: 100%;
+            }
+
             .suggestion-wrap {
               position: relative;
             }
+
             .suggestions {
               position: absolute;
-              top: 46px;
+              top: 70px;
               left: 0;
               right: 0;
               background: white;
@@ -598,48 +634,90 @@ export default function Tracker() {
               max-height: 260px;
               overflow-y: auto;
             }
+
             .suggestion-item {
               padding: 11px;
               cursor: pointer;
               border-bottom: 1px solid #f3f4f6;
               font-size: 14px;
             }
+
             .empty-suggestion {
               padding: 11px;
               color: #6b7280;
               font-size: 14px;
             }
+
             .bet-table {
               table-layout: fixed;
               width: 100%;
             }
-            .date-col { width: 90px; }
-            .match-col { width: 170px; }
-            .score-col { width: 95px; }
-            .type-col { width: 100px; }
-            .selection-col { width: 160px; }
-            .odds-col { width: 90px; white-space: nowrap; }
-            .stake-col { width: 95px; }
-            .result-col { width: 100px; }
-            .pl-col { width: 90px; }
-            .note-col { width: 150px; }
-            .action-col { width: 78px; }
+
+            .date-col {
+              width: 90px;
+            }
+
+            .match-col {
+              width: 170px;
+            }
+
+            .score-col {
+              width: 95px;
+            }
+
+            .type-col {
+              width: 100px;
+            }
+
+            .selection-col {
+              width: 160px;
+            }
+
+            .odds-col {
+              width: 90px;
+              white-space: nowrap;
+            }
+
+            .stake-col {
+              width: 95px;
+            }
+
+            .result-col {
+              width: 100px;
+            }
+
+            .pl-col {
+              width: 90px;
+            }
+
+            .note-col {
+              width: 150px;
+            }
+
+            .action-col {
+              width: 78px;
+            }
+
             .date-cell {
               white-space: nowrap;
               font-weight: 600;
             }
+
             .match-cell {
               line-height: 1.45;
               white-space: normal;
             }
+
             .team-line {
               display: block;
               font-weight: 600;
             }
+
             .away-team {
               color: #4b5563;
               font-weight: 600;
             }
+
             .score-input {
               width: 76px;
               min-width: 76px;
@@ -648,15 +726,18 @@ export default function Tracker() {
               padding-left: 6px;
               padding-right: 6px;
             }
+
             .note-input {
               width: 130px;
               min-width: 130px;
               max-width: 130px;
             }
+
             .odds-cell {
               white-space: nowrap;
               text-align: center;
             }
+
             .table-input {
               border: 1px solid #d1d5db;
               border-radius: 10px;
@@ -664,7 +745,10 @@ export default function Tracker() {
               font-size: 14px;
               background: white;
             }
-            th { white-space: nowrap; }
+
+            th {
+              white-space: nowrap;
+            }
           `}</style>
         </section>
       </main>
