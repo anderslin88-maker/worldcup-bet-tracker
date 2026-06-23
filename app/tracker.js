@@ -102,20 +102,27 @@ function resultText(result) {
   return {
     pending: "未結算",
     win: "贏",
-    lose: "輸",
+    half_win: "贏一半",
+    quarter_win: "贏四分之一",
     push: "走水",
+    quarter_lose: "輸四分之一",
+    half_lose: "輸一半",
+    lose: "輸",
   }[result] || result;
 }
 
 function calcPL(bet) {
   const stake = Number(bet.stake || 0);
   const odds = Number(bet.odds || 0);
+  const fullProfit = Math.round((stake * odds - stake) * 100) / 100;
 
-  if (bet.result === "win") {
-    return Math.round((stake * odds - stake) * 100) / 100;
-  }
-  if (bet.result === "lose") return -stake;
+  if (bet.result === "win") return fullProfit;
+  if (bet.result === "half_win") return Math.round((fullProfit / 2) * 100) / 100;
+  if (bet.result === "quarter_win") return Math.round((fullProfit / 4) * 100) / 100;
   if (bet.result === "push") return 0;
+  if (bet.result === "quarter_lose") return Math.round((-stake / 4) * 100) / 100;
+  if (bet.result === "half_lose") return Math.round((-stake / 2) * 100) / 100;
+  if (bet.result === "lose") return -stake;
   return 0;
 }
 
@@ -179,7 +186,7 @@ export default function Tracker() {
     const settled = bets.filter((b) => b.result !== "pending");
     const totalStake = settled.reduce((sum, b) => sum + Number(b.stake || 0), 0);
     const totalPL = settled.reduce((sum, b) => sum + calcPL(b), 0);
-    const wins = settled.filter((b) => b.result === "win").length;
+    const wins = settled.filter((b) => ["win", "half_win", "quarter_win"].includes(b.result)).length;
     const winRate = settled.length ? (wins / settled.length) * 100 : 0;
     const roi = totalStake ? (totalPL / totalStake) * 100 : 0;
     return { totalStake, totalPL, winRate, roi };
@@ -423,8 +430,12 @@ export default function Tracker() {
               >
                 <option value="pending">未結算</option>
                 <option value="win">贏</option>
-                <option value="lose">輸</option>
+                <option value="half_win">贏一半</option>
+                <option value="quarter_win">贏四分之一</option>
                 <option value="push">走水</option>
+                <option value="quarter_lose">輸四分之一</option>
+                <option value="half_lose">輸一半</option>
+                <option value="lose">輸</option>
               </select>
             </div>
 
@@ -445,7 +456,7 @@ export default function Tracker() {
           </form>
 
           <p className="note">
-            V6.6 更新：手機版儀表板改為較緊湊顯示，重新整理與匯出 CSV 移到最下方。
+            V6.7 更新：結果新增贏一半、輸一半、贏四分之一、輸四分之一，支援亞洲盤。
           </p>
           {error && <p className="error">{error}</p>}
         </section>
@@ -652,7 +663,7 @@ export default function Tracker() {
             }
 
             .result-col {
-              width: 78px;
+              width: 100px;
             }
 
             .pl-col {
@@ -721,8 +732,8 @@ export default function Tracker() {
             }
 
             .bet-table select {
-              width: 68px;
-              min-width: 68px;
+              width: 88px;
+              min-width: 88px;
               height: 36px;
               font-size: 13px;
               padding: 5px 6px;
