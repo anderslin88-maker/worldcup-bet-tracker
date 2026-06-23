@@ -619,20 +619,9 @@ export default function Tracker() {
           </form>
 
           <p className="note">
-            V6.9 更新：新增全部／本週／上週／本月／自訂日期篩選，統計與列表會同步更新。
+            V6.10 更新：手機版儀表板放大、日期篩選壓縮顯示，並移除重新整理與匯出 CSV。
           </p>
           {error && <p className="error">{error}</p>}
-        </section>
-
-        <section className="panel">
-          <div className="actions">
-            <button className="secondary" onClick={loadBets} disabled={loading}>
-              重新整理
-            </button>
-            <button className="secondary" onClick={exportCSV}>
-              匯出 CSV
-            </button>
-          </div>
         </section>
 
         <section className="panel">
@@ -1199,6 +1188,105 @@ export default function Tracker() {
               .danger {
                 padding: 7px 8px !important;
                 font-size: 12px !important;
+              }
+            }
+
+
+            @media (max-width: 768px) {
+              .cards {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 12px !important;
+              }
+
+              .card {
+                padding: 18px 14px !important;
+                min-height: 86px;
+              }
+
+              .card .label,
+              .label {
+                font-size: 13px !important;
+                margin-bottom: 8px !important;
+              }
+
+              .card .value,
+              .value {
+                font-size: 30px !important;
+                line-height: 1.1 !important;
+                font-weight: 800 !important;
+              }
+
+              .filter-panel {
+                padding: 12px 12px !important;
+              }
+
+              .filter-header {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                gap: 8px !important;
+                margin-bottom: 8px !important;
+              }
+
+              .filter-header h2 {
+                font-size: 16px !important;
+                margin: 0 !important;
+                white-space: nowrap;
+              }
+
+              .filter-header span {
+                font-size: 11px !important;
+                margin-top: 0 !important;
+                text-align: right;
+                line-height: 1.2;
+              }
+
+              .filter-actions {
+                display: grid !important;
+                grid-template-columns: repeat(5, 1fr) !important;
+                gap: 6px !important;
+              }
+
+              .filter-actions button,
+              .filter-active {
+                width: 100% !important;
+                padding: 7px 4px !important;
+                font-size: 12px !important;
+                border-radius: 8px !important;
+                white-space: nowrap;
+              }
+
+              .custom-date-row {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 8px !important;
+                margin-top: 10px !important;
+              }
+
+              .custom-date-row div {
+                margin-bottom: 0 !important;
+              }
+
+              .custom-date-row label {
+                font-size: 11px !important;
+              }
+
+              .custom-date-row input {
+                height: 36px !important;
+                font-size: 12px !important;
+                width: 100% !important;
+                box-sizing: border-box;
+              }
+            }
+
+            @media (max-width: 390px) {
+              .card .value,
+              .value {
+                font-size: 27px !important;
+              }
+
+              .filter-actions {
+                grid-template-columns: repeat(3, 1fr) !important;
               }
             }
 
