@@ -143,6 +143,53 @@ function splitMatch(matchName) {
   return [matchName, ""];
 }
 
+function toDateOnly(date) {
+  const copied = new Date(date);
+  copied.setHours(0, 0, 0, 0);
+  return copied;
+}
+
+function toISODate(date) {
+  const copied = new Date(date);
+  const year = copied.getFullYear();
+  const month = String(copied.getMonth() + 1).padStart(2, "0");
+  const day = String(copied.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function getWeekRange(offsetWeeks = 0) {
+  const today = toDateOnly(new Date());
+  const day = today.getDay() || 7;
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - day + 1 + offsetWeeks * 7);
+
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+
+  return {
+    start: toISODate(monday),
+    end: toISODate(sunday),
+  };
+}
+
+function getMonthRange() {
+  const today = toDateOnly(new Date());
+  const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+
+  return {
+    start: toISODate(firstDay),
+    end: toISODate(today),
+  };
+}
+
+function isBetweenDate(dateString, start, end) {
+  if (!dateString) return false;
+  if (start && dateString < start) return false;
+  if (end && dateString > end) return false;
+  return true;
+}
+
+
 export default function Tracker() {
   const [bets, setBets] = useState([]);
   const [form, setForm] = useState(initialForm);
@@ -150,6 +197,9 @@ export default function Tracker() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [dateFilter, setDateFilter] = useState("all");
+  const [customStart, setCustomStart] = useState("");
+  const [customEnd, setCustomEnd] = useState("");
 
   const filteredMatches = useMemo(() => {
     const keyword = matchSearch.trim();
@@ -182,15 +232,61 @@ export default function Tracker() {
     loadBets();
   }, []);
 
+  const filteredBets = useMemo(() => {
+    if (dateFilter === "all") return bets;
+
+    if (dateFilter === "thisWeek") {
+      const { start, end } = getWeekRange(0);
+      return bets.filter((bet) => isBetweenDate(bet.bet_date, start, end));
+    }
+
+    if (dateFilter === "lastWeek") {
+      const { start, end } = getWeekRange(-1);
+      return bets.filter((bet) => isBetweenDate(bet.bet_date, start, end));
+    }
+
+    if (dateFilter === "thisMonth") {
+      const { start, end } = getMonthRange();
+      return bets.filter((bet) => isBetweenDate(bet.bet_date, start, end));
+    }
+
+    if (dateFilter === "custom") {
+      return bets.filter((bet) => isBetweenDate(bet.bet_date, customStart, customEnd));
+    }
+
+    return bets;
+  }, [bets, dateFilter, customStart, customEnd]);
+
+  const filterSummary = useMemo(() => {
+    if (dateFilter === "all") return "全部紀錄";
+    if (dateFilter === "thisWeek") {
+      const { start, end } = getWeekRange(0);
+      return `本週 ${start} ~ ${end}`;
+    }
+    if (dateFilter === "lastWeek") {
+      const { start, end } = getWeekRange(-1);
+      return `上週 ${start} ~ ${end}`;
+    }
+    if (dateFilter === "thisMonth") {
+      const { start, end } = getMonthRange();
+      return `本月 ${start} ~ ${end}`;
+    }
+    if (dateFilter === "custom") {
+      if (!customStart && !customEnd) return "自訂日期";
+      return `自訂 ${customStart || "不限"} ~ ${customEnd || "不限"}`;
+    }
+    return "全部紀錄";
+  }, [dateFilter, customStart, customEnd]);
+
   const stats = useMemo(() => {
-    const settled = bets.filter((b) => b.result !== "pending");
+    const settled = filteredBets.filter((b) => b.result !== "pending");
     const totalStake = settled.reduce((sum, b) => sum + Number(b.stake || 0), 0);
     const totalPL = settled.reduce((sum, b) => sum + calcPL(b), 0);
     const wins = settled.filter((b) => ["win", "halfwin", "quarterwin"].includes(b.result)).length;
     const winRate = settled.length ? (wins / settled.length) * 100 : 0;
     const roi = totalStake ? (totalPL / totalStake) * 100 : 0;
     return { totalStake, totalPL, winRate, roi };
-  }, [bets]);
+  }, [filteredBets]);
 
   async function addBet(e) {
     e.preventDefault();
@@ -256,7 +352,7 @@ export default function Tracker() {
 
   function exportCSV() {
     const header = ["日期", "比賽", "實際比分", "玩法", "投注內容", "賠率", "注碼", "結果", "損益", "備註"];
-    const rows = bets.map((b) => [
+    const rows = filteredBets.map((b) => [
       b.bet_date,
       b.match_name,
       b.actual_score || "",
@@ -311,6 +407,72 @@ export default function Tracker() {
             <div className="value">{stats.winRate.toFixed(2)}%</div>
           </div>
         </div>
+
+        <section className="panel filter-panel">
+          <div className="filter-header">
+            <h2>日期篩選</h2>
+            <span>{filterSummary}</span>
+          </div>
+
+          <div className="filter-actions">
+            <button
+              type="button"
+              className={dateFilter === "all" ? "filter-active" : "secondary"}
+              onClick={() => setDateFilter("all")}
+            >
+              全部
+            </button>
+            <button
+              type="button"
+              className={dateFilter === "thisWeek" ? "filter-active" : "secondary"}
+              onClick={() => setDateFilter("thisWeek")}
+            >
+              本週
+            </button>
+            <button
+              type="button"
+              className={dateFilter === "lastWeek" ? "filter-active" : "secondary"}
+              onClick={() => setDateFilter("lastWeek")}
+            >
+              上週
+            </button>
+            <button
+              type="button"
+              className={dateFilter === "thisMonth" ? "filter-active" : "secondary"}
+              onClick={() => setDateFilter("thisMonth")}
+            >
+              本月
+            </button>
+            <button
+              type="button"
+              className={dateFilter === "custom" ? "filter-active" : "secondary"}
+              onClick={() => setDateFilter("custom")}
+            >
+              自訂
+            </button>
+          </div>
+
+          {dateFilter === "custom" && (
+            <div className="custom-date-row">
+              <div>
+                <label>開始日期</label>
+                <input
+                  type="date"
+                  value={customStart}
+                  onChange={(e) => setCustomStart(e.target.value)}
+                />
+              </div>
+              <div>
+                <label>結束日期</label>
+                <input
+                  type="date"
+                  value={customEnd}
+                  onChange={(e) => setCustomEnd(e.target.value)}
+                />
+              </div>
+            </div>
+          )}
+        </section>
 
         <section className="panel">
           <h2>新增投注</h2>
@@ -457,7 +619,7 @@ export default function Tracker() {
           </form>
 
           <p className="note">
-            V6.8 更新：新增玩法「單雙」，並保留亞洲盤結果選項。
+            V6.9 更新：新增全部／本週／上週／本月／自訂日期篩選，統計與列表會同步更新。
           </p>
           {error && <p className="error">{error}</p>}
         </section>
@@ -493,7 +655,7 @@ export default function Tracker() {
                 </tr>
               </thead>
               <tbody>
-                {bets.map((bet) => {
+                {filteredBets.map((bet) => {
                   const pl = calcPL(bet);
                   const [homeTeam, awayTeam] = splitMatch(bet.match_name);
                   return (
@@ -544,10 +706,10 @@ export default function Tracker() {
                     </tr>
                   );
                 })}
-                {bets.length === 0 && (
+                {filteredBets.length === 0 && (
                   <tr>
                     <td colSpan="11" className="note">
-                      尚無投注紀錄
+                      此日期範圍尚無投注紀錄
                     </td>
                   </tr>
                 )}
@@ -761,6 +923,75 @@ export default function Tracker() {
               white-space: nowrap;
             }
 
+
+            .filter-panel {
+              padding-top: 18px;
+              padding-bottom: 18px;
+            }
+
+            .filter-header {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 12px;
+              margin-bottom: 14px;
+            }
+
+            .filter-header h2 {
+              margin: 0;
+            }
+
+            .filter-header span {
+              color: #64748b;
+              font-size: 13px;
+              font-weight: 600;
+            }
+
+            .filter-actions {
+              display: flex;
+              flex-wrap: wrap;
+              gap: 10px;
+            }
+
+            .filter-actions button,
+            .filter-active {
+              border: 0;
+              border-radius: 10px;
+              padding: 10px 16px;
+              font-weight: 700;
+              cursor: pointer;
+            }
+
+            .filter-active {
+              background: #111827;
+              color: white;
+            }
+
+            .custom-date-row {
+              display: flex;
+              gap: 12px;
+              margin-top: 14px;
+            }
+
+            .custom-date-row div {
+              display: flex;
+              flex-direction: column;
+              gap: 6px;
+            }
+
+            .custom-date-row label {
+              font-size: 12px;
+              font-weight: 700;
+              color: #334155;
+            }
+
+            .custom-date-row input {
+              height: 40px;
+              border: 1px solid #d1d5db;
+              border-radius: 10px;
+              padding: 0 10px;
+            }
+
             @media (max-width: 1280px) {
               main {
                 max-width: 1180px;
@@ -878,6 +1109,38 @@ export default function Tracker() {
 
               .suggestions {
                 top: 68px;
+              }
+
+              .filter-header {
+                display: block;
+              }
+
+              .filter-header span {
+                display: block;
+                margin-top: 6px;
+              }
+
+              .filter-actions {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+              }
+
+              .filter-actions button {
+                width: 100%;
+              }
+
+              .custom-date-row {
+                display: block;
+              }
+
+              .custom-date-row div {
+                margin-bottom: 10px;
+              }
+
+              .custom-date-row input {
+                width: 100%;
+                box-sizing: border-box;
               }
 
               .actions {
