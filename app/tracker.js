@@ -382,6 +382,7 @@ export default function Tracker() {
                 <option>獨贏</option>
                 <option>讓分</option>
                 <option>大小分</option>
+                <option>單雙</option>
                 <option>波膽</option>
                 <option>串關</option>
                 <option>走地</option>
@@ -456,7 +457,7 @@ export default function Tracker() {
           </form>
 
           <p className="note">
-            V6.7 更新：新增贏一半、贏四分之一、輸四分之一、輸一半，支援亞洲盤。
+            V6.8 更新：新增玩法「單雙」，並保留亞洲盤結果選項。
           </p>
           {error && <p className="error">{error}</p>}
         </section>
