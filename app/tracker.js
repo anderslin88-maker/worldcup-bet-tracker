@@ -102,11 +102,11 @@ function resultText(result) {
   return {
     pending: "未結算",
     win: "贏",
-    half_win: "贏一半",
-    quarter_win: "贏四分之一",
+    halfwin: "贏一半",
+    quarterwin: "贏四分之一",
     push: "走水",
-    quarter_lose: "輸四分之一",
-    half_lose: "輸一半",
+    quarterlose: "輸四分之一",
+    halflose: "輸一半",
     lose: "輸",
   }[result] || result;
 }
@@ -114,14 +114,14 @@ function resultText(result) {
 function calcPL(bet) {
   const stake = Number(bet.stake || 0);
   const odds = Number(bet.odds || 0);
-  const fullProfit = Math.round((stake * odds - stake) * 100) / 100;
+  const fullWin = Math.round((stake * odds - stake) * 100) / 100;
 
-  if (bet.result === "win") return fullProfit;
-  if (bet.result === "half_win") return Math.round((fullProfit / 2) * 100) / 100;
-  if (bet.result === "quarter_win") return Math.round((fullProfit / 4) * 100) / 100;
+  if (bet.result === "win") return fullWin;
+  if (bet.result === "halfwin") return Math.round((fullWin / 2) * 100) / 100;
+  if (bet.result === "quarterwin") return Math.round((fullWin / 4) * 100) / 100;
   if (bet.result === "push") return 0;
-  if (bet.result === "quarter_lose") return Math.round((-stake / 4) * 100) / 100;
-  if (bet.result === "half_lose") return Math.round((-stake / 2) * 100) / 100;
+  if (bet.result === "quarterlose") return Math.round((-stake / 4) * 100) / 100;
+  if (bet.result === "halflose") return Math.round((-stake / 2) * 100) / 100;
   if (bet.result === "lose") return -stake;
   return 0;
 }
@@ -186,7 +186,7 @@ export default function Tracker() {
     const settled = bets.filter((b) => b.result !== "pending");
     const totalStake = settled.reduce((sum, b) => sum + Number(b.stake || 0), 0);
     const totalPL = settled.reduce((sum, b) => sum + calcPL(b), 0);
-    const wins = settled.filter((b) => ["win", "half_win", "quarter_win"].includes(b.result)).length;
+    const wins = settled.filter((b) => ["win", "halfwin", "quarterwin"].includes(b.result)).length;
     const winRate = settled.length ? (wins / settled.length) * 100 : 0;
     const roi = totalStake ? (totalPL / totalStake) * 100 : 0;
     return { totalStake, totalPL, winRate, roi };
@@ -430,11 +430,11 @@ export default function Tracker() {
               >
                 <option value="pending">未結算</option>
                 <option value="win">贏</option>
-                <option value="half_win">贏一半</option>
-                <option value="quarter_win">贏四分之一</option>
+                <option value="halfwin">贏一半</option>
+                <option value="quarterwin">贏四分之一</option>
                 <option value="push">走水</option>
-                <option value="quarter_lose">輸四分之一</option>
-                <option value="half_lose">輸一半</option>
+                <option value="quarterlose">輸四分之一</option>
+                <option value="halflose">輸一半</option>
                 <option value="lose">輸</option>
               </select>
             </div>
@@ -456,9 +456,20 @@ export default function Tracker() {
           </form>
 
           <p className="note">
-            V6.7 更新：結果新增贏一半、輸一半、贏四分之一、輸四分之一，支援亞洲盤。
+            V6.7 更新：新增贏一半、贏四分之一、輸四分之一、輸一半，支援亞洲盤。
           </p>
           {error && <p className="error">{error}</p>}
+        </section>
+
+        <section className="panel">
+          <div className="actions">
+            <button className="secondary" onClick={loadBets} disabled={loading}>
+              重新整理
+            </button>
+            <button className="secondary" onClick={exportCSV}>
+              匯出 CSV
+            </button>
+          </div>
         </section>
 
         <section className="panel">
@@ -663,7 +674,7 @@ export default function Tracker() {
             }
 
             .result-col {
-              width: 100px;
+              width: 96px;
             }
 
             .pl-col {
@@ -776,6 +787,12 @@ export default function Tracker() {
                 width: 115px;
               }
             }
+
+            @media (max-width: 768px) {
+              header {
+                width: 100%;
+                min-width: 0;
+              }
 
               header h1 {
                 font-size: 16px;
@@ -906,215 +923,23 @@ export default function Tracker() {
               }
 
               .result-col {
-                width: 68px;
+                width: 88px;
               }
 
               .bet-table select {
-                width: 58px;
-                min-width: 58px;
+                width: 78px;
+                min-width: 78px;
                 font-size: 12px;
               }
 
               .danger {
                 padding: 7px 8px !important;
                 font-size: 12px !important;
-              }
-            }
-
-
-            @media (max-width: 768px) {
-              body {
-                overflow-x: hidden;
-              }
-
-              header {
-                width: 100%;
-                min-width: 0;
-                padding: 18px 14px !important;
-                box-sizing: border-box;
-              }
-
-              header h1 {
-                font-size: 17px !important;
-                line-height: 1.25;
-                padding-left: 0 !important;
-                white-space: nowrap;
-              }
-
-              main {
-                width: 100%;
-                max-width: 100%;
-                padding: 12px 10px !important;
-                box-sizing: border-box;
-              }
-
-              .cards {
-                display: grid !important;
-                grid-template-columns: 1fr 1fr;
-                gap: 8px !important;
-                width: 100%;
-                margin-bottom: 12px !important;
-              }
-
-              .card {
-                min-width: 0 !important;
-                padding: 12px 10px !important;
-                border-radius: 14px !important;
-              }
-
-              .card .label,
-              .label {
-                font-size: 12px !important;
-                margin-bottom: 6px !important;
-              }
-
-              .card .value,
-              .value {
-                font-size: 24px !important;
-                line-height: 1.15 !important;
-                word-break: keep-all;
-              }
-
-              .panel {
-                width: 100%;
-                max-width: 100%;
-                box-sizing: border-box;
-                padding: 16px 12px !important;
-                margin-bottom: 12px !important;
-                border-radius: 16px !important;
-                overflow: hidden;
-              }
-
-              .panel h2 {
-                font-size: 22px !important;
-                margin-bottom: 18px !important;
-              }
-
-              .aligned-form {
-                display: block !important;
-                width: 100%;
-                overflow: visible;
-              }
-
-              .form-field,
-              .date-field,
-              .match-field,
-              .score-field,
-              .type-field,
-              .selection-field,
-              .odds-field,
-              .stake-field,
-              .result-field,
-              .note-field,
-              .action-field {
-                width: 100% !important;
-                margin-bottom: 12px;
-              }
-
-              .form-field label {
-                margin-bottom: 6px;
-                font-size: 13px;
-              }
-
-              .form-field input,
-              .form-field select {
-                width: 100% !important;
-                height: 44px;
-                font-size: 15px;
-              }
-
-              .action-field label {
-                display: none;
-              }
-
-              .action-field button {
-                width: 100%;
-                height: 46px;
-                margin-top: 2px;
-              }
-
-              .suggestions {
-                top: 68px;
-              }
-
-              .table-wrap {
-                overflow-x: auto !important;
-                -webkit-overflow-scrolling: touch;
-              }
-
-              .bet-table {
-                min-width: 720px;
-                font-size: 12px;
-              }
-
-              .bet-table th,
-              .bet-table td {
-                padding: 8px 6px;
-              }
-
-              .match-col {
-                width: 105px;
-              }
-
-              .selection-col {
-                width: 150px;
-              }
-
-              .score-col {
-                width: 66px;
-              }
-
-              .score-input {
-                width: 52px;
-                min-width: 52px;
-                max-width: 52px;
-              }
-
-              .result-col {
-                width: 68px;
-              }
-
-              .bet-table select {
-                width: 58px;
-                min-width: 58px;
-                font-size: 12px;
-              }
-
-              .danger {
-                padding: 7px 8px !important;
-                font-size: 12px !important;
-              }
-
-              .bottom-actions-panel {
-                margin-top: 12px !important;
-                margin-bottom: 24px !important;
-              }
-
-              .actions {
-                display: flex;
-                gap: 10px;
-                flex-wrap: wrap;
-              }
-
-              .actions button {
-                flex: 1 1 120px;
-                height: 44px;
               }
             }
 
           `}</style>
         </section>
-        <section className="panel bottom-actions-panel">
-          <div className="actions">
-            <button className="secondary" onClick={loadBets} disabled={loading}>
-              重新整理
-            </button>
-            <button className="secondary" onClick={exportCSV}>
-              匯出 CSV
-            </button>
-          </div>
-        </section>
-
       </main>
     </>
   );
